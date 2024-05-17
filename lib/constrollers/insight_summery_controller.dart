@@ -1,4 +1,5 @@
 import 'package:point_of_sale/models/grn.dart';
+import 'package:point_of_sale/models/low_stock_model.dart';
 import 'package:point_of_sale/models/stock.dart';
 import 'package:point_of_sale/utils/database.dart';
 
@@ -148,6 +149,7 @@ class InsightSummery{
     return grns;
   }
 
+  @Deprecated("Use getLowStocks2 instead")
   Future<List<Stock>> getLowStocks()async{
     List<Stock> stocks = [];
 
@@ -177,6 +179,36 @@ class InsightSummery{
     return stocks;
   }
 
+  Future<List<LowStockModel>> getLowStocks2()async{
+    List<LowStockModel> stocks = [];
+
+    var pool = MySQLDatabase().pool;
+    var result =await pool.execute("SELECT p.*, s.allqty, m.*, sub.*,u.* FROM product p INNER JOIN units u ON u.unit_id = p.units_unit_id  INNER JOIN main_category m ON p.main_category_main_cat_id = m.main_cat_id INNER JOIN sub_category sub ON p.sub_category_sub_cat_id = sub.sub_cat_id JOIN ( SELECT stock.product_product_id, SUM(stock.availble_qty) AS allqty FROM stock WHERE stock.isActive = 1 GROUP BY stock.product_product_id ) s ON p.product_id = s.product_product_id WHERE s.allqty < p.low_stock_limit;");
+
+    for(var row in result.rows){
+      String id = row.colByName(Product.COLNAME_ID)?? "0";
+      String barcode = row.colByName(Product.COLNAME_BARCODE)?? "0";
+      String name = row.colByName(Product.COLNAME_NAME)as String;
+      String siName = row.colByName(Product.COLNAME_SI_NAME)as String;
+      String description = row.colByName(Product.COLNAME_DESCRIPTION)as String;
+
+      int mainCategoryId = int.parse(row.colByName(MainCategory.COLNAME_ID)!);
+      int subCategoryId = int.parse(row.colByName(SubCategory.COLNAME_ID)!);
+      int unitId = int.parse(row.colByName(Unit.COLNAME_ID)!);
+
+      MainCategory mainCategory = MainCategory(id: mainCategoryId,name: row.colByName(MainCategory.COLNAME_NAME)!);
+      SubCategory subCategory = SubCategory(id: subCategoryId,name: row.colByName(SubCategory.COLNAME_NAME)!);
+      Unit unit = Unit(id: unitId,name: row.colByName(Unit.COLNAME_NAME)!);
+
+      Product p = Product(id: int.parse(id),barcode: barcode,name: name,siName: siName,description: description,mainCategory: mainCategory,subCategory: subCategory,unit: unit);
+      double allQty = double.parse(row.colByName("allqty")?? "0");
+      LowStockModel  lowStockModel = LowStockModel(product: p, qty: allQty);
+
+      stocks.add(lowStockModel);
+    }
+
+    return stocks;
+  }
   Future<List<Stock>> getExpiredStocks()async{
     List<Stock> stocks = [];
 

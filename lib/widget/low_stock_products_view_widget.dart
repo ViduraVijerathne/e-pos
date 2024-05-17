@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:point_of_sale/models/low_stock_model.dart';
 
 import '../constrollers/insight_summery_controller.dart';
 import '../models/stock.dart';
@@ -14,14 +15,15 @@ class LowStockProductsViewWidget extends StatefulWidget {
 
 class _LowStockProductsViewWidgetState extends State<LowStockProductsViewWidget> {
   InsightSummery controller= InsightSummery();
-  List<Stock> stocks = [];
+  List<LowStockModel> stocks = [];
   bool isLoading = false;
 
   void loadStocks()async{
     setState(() {
       isLoading = true;
     });
-    stocks = await controller.getLowStocks();
+    stocks = await controller.getLowStocks2();
+    // stocks = await controller.getLowStocks();
     setState(() {
       isLoading = false;
     });
@@ -57,11 +59,11 @@ class _LowStockProductsViewWidgetState extends State<LowStockProductsViewWidget>
 
               title: Row(
                 children: [
-                  Expanded(flex:3,child: Text("QTY",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
-                  Expanded(flex:3,child: Text("Wholesale",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
-                  Expanded(flex:3,child: Text("RetailPrice",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
-                  Expanded(flex:3,child: Text("Exp Date ",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
-                  Expanded(flex:3,child: Text("Added Date ",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("ID",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("Barcode",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("Main Category",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("Sub Category",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("available Qty",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
 
                 ],
               ),
@@ -82,11 +84,11 @@ class _LowStockProductsViewWidgetState extends State<LowStockProductsViewWidget>
               title: Text(e.product.name,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 14),),
               subtitle: Row(
                 children: [
-                  Expanded(flex:3,child: Text("${e.availbleQty}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
-                  Expanded(flex:3,child: Text("${e.grn.wholesalePrice}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
-                  Expanded(flex:3,child: Text("${e.retailPrice}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,)),),
-                  Expanded(flex:3,child: Text("${OtherUtils.getDate(e.exp_date)}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,color: Colors.red)),),
-                  Expanded(flex:3,child: Text("${OtherUtils.getDate(e.grn.grnDate)}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("${e.product.id}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("${e.product.barcode}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 10)),),
+                  Expanded(flex:3,child: Text("${e.product.mainCategory.name}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,)),),
+                  Expanded(flex:3,child: Text("${e.product.subCategory.name}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text("${e.qty}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,color: Colors.red,fontWeight: FontWeight.w700)),),
 
 
 
