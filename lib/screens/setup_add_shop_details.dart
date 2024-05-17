@@ -43,6 +43,21 @@ class _SetupAddShopDetailsScreenState extends State<SetupAddShopDetailsScreen> {
     Navigator.of(context).pop();
   }
 
+  void loadData()async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    _shopNameController.text = prefs.getString("shopName")?? "";
+    _shopAddressController.text = prefs.getString("shopAddress")?? "";
+    _shopEmailController.text = prefs.getString("shopEmail")?? "";
+    _shopContact1Controller.text = prefs.getString("shopContact1")?? "";
+    _shopContact2Controller.text = prefs.getString("shopContact2")?? "";
+  }
+
+  @override
+  void initState() {
+   loadData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(

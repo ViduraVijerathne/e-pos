@@ -39,6 +39,19 @@ class _SetupUserDetailsScreenState extends State<SetupUserDetailsScreen> {
     Navigator.of(context).pop();
   }
 
+  void loadData()async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    _userEmailController.text = prefs.getString("userEmail")?? "";
+    _userNameController.text = prefs.getString("userName")?? "";
+    _userPasswordController.text = prefs.getString("userPassword")?? "";
+  }
+
+  @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(

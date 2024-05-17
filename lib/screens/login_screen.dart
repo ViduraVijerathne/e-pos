@@ -30,17 +30,83 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void login() async{
+  void showSetup(BuildContext context) async {
+    TextEditingController controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => Center(
+        child: SizedBox(
+          height: 250,
+          width: 500,
+          child: ContentDialog(
+            title: const Text('Warning !'),
+            content: Container(
+              child: Column(
+                children: [
+                  Text("You can't access this Setup. Please Contact the Agent for more details.",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(color: Colors.red)),
+                  const SizedBox(height: 10,),
+                  PasswordBox(
+                    placeholder: "Developer Code",
+                    controller: controller,
+                  )
+                ],
+              ),
+
+            ),
+            actions: [
+              Button(
+                child: const Text('Show Setup'),
+                onPressed: () {
+                  if(controller.text == "6jfmd672@V"){
+                    Navigator.of(context).push(FluentPageRoute(
+                      builder: (context) => SetupScreen(),
+                    ));
+                  }else{
+                    displayInfoBar(context, builder: (context, close) {
+                      return InfoBar(
+                        title: const Text('OOPS..!'),
+                        content: const Text('Invalid Code'),
+                        action: IconButton(
+                          icon: const Icon(FluentIcons.clear),
+                          onPressed: close,
+                        ),
+                        severity: InfoBarSeverity.error,
+                      );
+                    });
+                    // Delete file here
+                  }
+                },
+              ),
+              FilledButton(
+                child: const Text('Cancel'),
+                onPressed: () => Navigator.pop(context, 'User canceled dialog'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    setState(() {});
+  }
+
+  void showSetup2() {
+
+    Navigator.of(context).push(FluentPageRoute(
+      builder: (context) => SetupScreen(),
+    ));
+  }
+
+  void login() async {
     setState(() {
       isLoading = true;
     });
 
-    if(AppData.userEmail == _userEmailController.text && AppData.userPassword == _userPasswordController.text){
+    if (AppData.userEmail == _userEmailController.text &&
+        AppData.userPassword == _userPasswordController.text) {
       await displayInfoBar(context, builder: (context, close) {
         return InfoBar(
           title: const Text('Success!'),
-          content: const Text(
-              'Successfully Logging!'),
+          content: const Text('Successfully Logging!'),
           action: IconButton(
             icon: const Icon(FluentIcons.clear),
             onPressed: close,
@@ -50,13 +116,14 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       await Future.delayed(Duration(seconds: 3));
-      Navigator.of(context).pushReplacement(FluentPageRoute(builder: (context) => HomeScreen(),));
-    }else{
+      Navigator.of(context).pushReplacement(FluentPageRoute(
+        builder: (context) => HomeScreen(),
+      ));
+    } else {
       await displayInfoBar(context, builder: (context, close) {
         return InfoBar(
           title: const Text('OOPS..!'),
-          content: const Text(
-              'Invalid Email or password'),
+          content: const Text('Invalid Email or password'),
           action: IconButton(
             icon: const Icon(FluentIcons.clear),
             onPressed: close,
@@ -162,11 +229,27 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 15,
               ),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 30),
-                    child: ThemeBtn()),
+              // const Align(
+              //   alignment: Alignment.centerLeft,
+              //   child: Padding(
+              //       padding: const EdgeInsets.only(left: 30),
+              //       child: ThemeBtn()),
+              // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(left: 30),
+                      child: ThemeBtn()),
+                  Padding(
+                      padding: const EdgeInsets.only(right: 30),
+                      child: IconButton(
+                        icon: Icon(FluentIcons.settings),
+                        onPressed: () {
+                          showSetup( context);
+                        },
+                      )),
+                ],
               )
             ],
           ),

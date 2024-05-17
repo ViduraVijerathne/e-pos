@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return FluentApp(
       theme: FluentThemeData.light().copyWith(
-        // scaffoldBackgroundColor: bgLightColor,
-        // cardColor: secondaryLightColor,
+        scaffoldBackgroundColor: bgLightColor,
+        cardColor: secondaryLightColor,
         accentColor: Colors.blue,
       ),
       darkTheme: FluentThemeData.dark().copyWith(

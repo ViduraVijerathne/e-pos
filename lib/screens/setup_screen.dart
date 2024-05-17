@@ -24,12 +24,21 @@ class _SetupScreenState extends State<SetupScreen> {
   TextEditingController _dbPasswordController = TextEditingController();
   bool isLoading = false;
 
-  void loadData(){
-    _dbURLcontroller.text = "localhost";
-    _dbPORTController.text = "3306";
-    _dbNameController.text = "pos";
-    _dbUserController.text = "root";
-    _dbPasswordController.text = "root";
+
+
+  void loadData()async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+
+    _dbURLcontroller.text =prefs.getString("dbURL")?? "localhost";
+    _dbPORTController.text = prefs.getInt("port") == null ? "3306" : prefs.getInt("port").toString();
+    _dbNameController.text = prefs.getString("db")?? "e-pos";
+    _dbUserController.text = prefs.getString("user")?? "root";
+    _dbPasswordController.text = prefs.getString("password")?? "root";
+    // _dbPORTController.text = "3306";
+    // _dbNameController.text = "e-pos";
+    // _dbUserController.text = "root";
+    // _dbPasswordController.text = "root";
     if(mounted){
       setState(() {});
     }
@@ -66,7 +75,9 @@ class _SetupScreenState extends State<SetupScreen> {
         userName: _dbUserController.text,
         password: _dbPasswordController.text,
         databaseName:_dbNameController.text, // optional
+        // secure: false,
       );
+
       await conn.connect();
 
       final SharedPreferences prefs = await SharedPreferences.getInstance();
