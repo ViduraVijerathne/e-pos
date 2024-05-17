@@ -148,5 +148,13 @@ class Stock{
     return stocks[0];
   }
 
+  Future<void> deactivate()async{
+    final conn = MySQLDatabase().pool;
+    String query = "UPDATE `stock` SET `isActive`= 0 WHERE  `id`=$id";
+    await conn.execute(query);
+    conn.close();
+
+  }
+
 
 }

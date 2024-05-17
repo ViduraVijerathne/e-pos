@@ -181,7 +181,7 @@ class InsightSummery{
     List<Stock> stocks = [];
 
     var pool = MySQLDatabase().pool;
-    var result =await pool.execute("SELECT * FROM stock  WHERE stock.availble_qty > 0 AND (stock.exp_date <= NOW() AND  stock.mnf_date != stock.exp_date )");
+    var result =await pool.execute("SELECT * FROM stock  WHERE stock.availble_qty > 0 AND (stock.exp_date <= NOW() AND  stock.mnf_date != stock.exp_date) AND `isActive`= 1");
 
     for(var row in result.rows){
 

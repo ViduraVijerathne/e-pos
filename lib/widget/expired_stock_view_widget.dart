@@ -27,6 +27,18 @@ class _ExpiredStockViewWidgetState extends State<ExpiredStockViewWidget> {
     });
   }
 
+  void deactivateStock(Stock stock)async{
+    setState(() {
+      isLoading = true;
+    });
+    await stock.deactivate();
+    stocks.remove(stock);
+    setState(() {
+      isLoading = false;
+    });
+
+  }
+
   @override
   void initState() {
     loadStocks();
@@ -86,8 +98,8 @@ class _ExpiredStockViewWidgetState extends State<ExpiredStockViewWidget> {
                   Expanded(flex:3,child: Text("${e.availbleQty}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
                   Expanded(flex:3,child: Text("${e.grn.wholesalePrice}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
                   Expanded(flex:3,child: Text("${e.retailPrice}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,)),),
-                  Expanded(flex:3,child: Text("${OtherUtils.getDate(e.exp_date)}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,color: Colors.red)),),
-                  Expanded(flex:3,child: Text("${OtherUtils.getDate(e.grn.grnDate)}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
+                  Expanded(flex:3,child: Text(OtherUtils.getDate(e.exp_date),style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,color: Colors.red)),),
+                  Expanded(flex:3,child: Text(OtherUtils.getDate(e.grn.grnDate),style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
                   Expanded(
                     flex:1,
                     child: Button(
@@ -95,7 +107,9 @@ class _ExpiredStockViewWidgetState extends State<ExpiredStockViewWidget> {
                         backgroundColor: ButtonState.all(Colors.red)
                       ),
                       child: Icon(FluentIcons.remove,size: 5),
-                      onPressed: (){},
+                      onPressed: (){
+                        deactivateStock(e);
+                      },
                     ),
                   ),
 
