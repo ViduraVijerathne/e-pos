@@ -83,7 +83,11 @@ class _ExpiredStockViewWidgetState extends State<ExpiredStockViewWidget> {
             ),
           ),
         ),
-          isLoading ? const Center(child: LoadingWidget(),) :const SizedBox(),
+          isLoading ? const Center(child: LoadingWidget(),):stocks.isEmpty? Container(
+            margin:const EdgeInsets.only(top: 50,),
+            child: Center(child: Text("Nothings To Show",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 20,color: Colors.red.withOpacity(0.5)),)),
+          )
+              :const SizedBox(),
           
           ...stocks.map((e) => Container(
             margin:const EdgeInsets.all(5),
