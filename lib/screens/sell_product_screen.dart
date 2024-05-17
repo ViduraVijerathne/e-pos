@@ -440,7 +440,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
                                   Expanded(
                                     flex: 1,
                                     child: Center(
-                                      child:e.availbleQty > 0? Checkbox(
+                                      child:e.exp_date.isBefore(DateTime.now())?Text("Expired",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(color: Colors.red),) : e.availbleQty > 0? Checkbox(
                                         checked: selectedStock == null ? false: selectedStock!.id == e.id,
                                         onChanged: (value) {
                                           if(value !=null){

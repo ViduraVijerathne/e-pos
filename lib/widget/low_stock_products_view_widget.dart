@@ -89,14 +89,10 @@ class _LowStockProductsViewWidgetState extends State<LowStockProductsViewWidget>
                   Expanded(flex:3,child: Text("${e.product.mainCategory.name}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,)),),
                   Expanded(flex:3,child: Text("${e.product.subCategory.name}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12)),),
                   Expanded(flex:3,child: Text("${e.qty}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 12,color: Colors.red,fontWeight: FontWeight.w700)),),
-
-
-
                 ],
               ),
             ),
           ))
-
 
         ],
       ),
