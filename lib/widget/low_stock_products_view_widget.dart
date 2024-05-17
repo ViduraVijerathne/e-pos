@@ -43,7 +43,7 @@ class _LowStockProductsViewWidgetState extends State<LowStockProductsViewWidget>
       child: ListView(
         children: [
           const SizedBox(height: 10,),
-          Text("Low Stocks",style: FluentTheme.of(context).typography.subtitle,textAlign: TextAlign.center,),
+          Text("Low Stocks Products",style: FluentTheme.of(context).typography.subtitle,textAlign: TextAlign.center,),
           const SizedBox(height: 10,),
           const Divider(),
           const SizedBox(height: 10,),
@@ -67,7 +67,10 @@ class _LowStockProductsViewWidgetState extends State<LowStockProductsViewWidget>
               ),
             ),
           ),
-          isLoading ? const Center(child: LoadingWidget(),) :const SizedBox(),
+          isLoading ? const Center(child: LoadingWidget(),) : stocks.isEmpty ? Container(
+            margin:const EdgeInsets.only(top: 50,),
+            child: Center(child: Text("Nothings To Show",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 20,color: Colors.red.withOpacity(0.5)),)),
+          )  :const SizedBox(),
 
           ...stocks.map((e) => Container(
             margin:const EdgeInsets.all(5),
