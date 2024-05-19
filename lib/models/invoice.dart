@@ -61,6 +61,7 @@ class Invoice{
     id = results.lastInsertID.toInt();
     for(var item in items){
       item.invoiceID = results.lastInsertID.toInt();
+
       await item.insert();
     }
     conn.close();

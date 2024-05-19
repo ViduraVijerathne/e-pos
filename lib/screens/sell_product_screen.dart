@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/invoice.dart';
 import '../models/stock.dart';
+import '../widget/select_customer_widget.dart';
 
 class SellProductScreen extends StatefulWidget {
   const SellProductScreen({super.key});
@@ -33,18 +34,24 @@ class _SellProductScreenState extends State<SellProductScreen> {
   final TextEditingController _itemTotal = TextEditingController();
   final TextEditingController _cashController = TextEditingController();
   double invoiceBalance = 0;
+  final ScrollController _stockTableScrollController = ScrollController();
 
   void loadProducts() async {
-    stocks.addAll(await Stock.getAll());
+    stocks.addAll(await Stock.getForSell());
     searchStock.addAll(stocks);
     setState(() {});
+  }
+
+  Future<Customer> selectCustomer() async{
+    Customer? customer = await showDialog<Customer>(context: context, builder: (context) => const SelectCustomer(),);
+    return customer ?? Customer(id: 1,address: "",name: "",contact: "");
   }
 
   void checkOut()async{
 
     if(invoiceItems.isNotEmpty){
-      
-      Customer customer = Customer(id: 1,address: "",name: "",contact: "");
+      print("customer selection");
+      Customer customer =  await selectCustomer();
       
       double discountTotal = 0;
       double grandTotal = 0; //total price without discount
@@ -80,7 +87,8 @@ class _SellProductScreenState extends State<SellProductScreen> {
       await invoice.insert();
 
       await Printer.printInvoice(invoice);
-
+      _cashController.text = 0.toString();
+      clear();
       setState(() {
 
       });
@@ -90,9 +98,27 @@ class _SellProductScreenState extends State<SellProductScreen> {
     }
 
   }
-
+  void loadMoreStocks()async{
+    final newitems = await Stock.getForSell(limit: stocks.length+10);
+    if(newitems.isEmpty) return;
+    stocks.clear();
+    stocks.addAll(newitems);
+    searchStock.clear();
+    searchStock.addAll(stocks);
+    setState(() {});
+  }
+  void _onScroll(){
+    if (_stockTableScrollController.position.atEdge) {
+      bool isBottom = _stockTableScrollController.position.pixels ==
+          _stockTableScrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadMoreStocks();
+      }
+    }
+  }
   @override
   void initState() {
+    _stockTableScrollController.addListener(_onScroll); // Add scroll listener
     if (mounted) {
       loadProducts();
     }
@@ -177,17 +203,20 @@ class _SellProductScreenState extends State<SellProductScreen> {
     setState(() {});
   }
 
-  void searchByBarcode(String value) {
+  void searchByBarcode(String value)async {
     searchStock.clear();
     if (value.isNotEmpty) {
-      for (Stock stock in stocks) {
-        if (stock.barcode.startsWith(value)) {
-          searchStock.add(stock);
-        }
-        if (stock.barcode == value) {
-          select(stock);
-        }
-      }
+      searchStock.clear();
+      searchStock.addAll(await Stock.searchByBarcode(value: value));
+
+      // for (Stock stock in stocks) {
+      //   if (stock.barcode.startsWith(value)) {
+      //     searchStock.add(stock);
+      //   }
+      //   if (stock.barcode == value) {
+      //     select(stock);
+      //   }
+      // }
     } else {
       searchStock.clear();
       searchStock.addAll(stocks);
@@ -353,6 +382,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
               //       searchStock.map((e) => StockCardWidget(stock: e)).toList(),
               // ),
               child: ScaffoldPage.scrollable(
+                scrollController: _stockTableScrollController,
                 header: Container(
                   margin:const EdgeInsets.all(5),
                   padding:const EdgeInsets.all(5),
@@ -531,7 +561,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
                                   style: FluentTheme.of(context)
                                       .typography
                                       .bodyStrong!
-                                      .copyWith(color: Colors.white),
+                                      .copyWith(color: Colors.white,fontSize: 12),
                                 ),
                                 onPressed:checkOut),
                           ),

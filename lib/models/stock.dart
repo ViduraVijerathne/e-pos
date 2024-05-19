@@ -37,7 +37,7 @@ class Stock{
   static const String INSERTQUERY = "INSERT INTO `stock` (`barcode`, `availble_qty`, `retail_price`, `wholesale_price`, `mnf_date`, `exp_date`, `product_product_id`, `grn_grn_id`, `default_discount`) VALUES (?,?,?,?,?,?,?,?,?)";
   static const String SELECTQUERY = "SELECT * FROM `stock`";
   static const String UPDATEDEFAULTDISCOUNTQUARY = "UPDATE `stock` SET `default_discount`=:discount WHERE  `grn_grn_id`=:GRNID";
-  static const String SUBQTYQUARY  = "UPDATE `stock` SET `availble_qty`=:QTY WHERE  `id`=:ID ";
+  static const String SUBQTYQUARY  = "UPDATE `stock` SET `availble_qty`=`availble_qty`- :QTY WHERE  `id`=:ID ";
   static const String GETSTOCKBYID = "SELECT * FROM `stock` WHERE  id = :ID";
 
   Future<void> insert() async{
@@ -89,6 +89,32 @@ class Stock{
 
     return stocks;
   }
+  static Future<List<Stock>> getForSell({int limit = 6})async{
+    List<Stock> stocks = [];
+    final conn = MySQLDatabase().pool;
+    var results = await conn.execute("$SELECTQUERY WHERE stock.exp_date >= CURDATE() AND  stock.availble_qty > 0 LIMIT $limit");
+
+    for (var row in results.rows) {
+      GRN grn =await GRN.getByID(row.colByName(COLNAME_GRN)??"0");
+      Product product = await Product.getByID(row.colByName(COLNAME_PRODUCT)??"0");
+
+      Stock stock = Stock(
+          id: int.parse(row.colByName(COLNAME_ID)??"0"),
+          barcode: row.colByName(COLNAME_BARCODE) as String,
+          availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+          defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
+          retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
+          wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
+          mnf_date: DateTime.parse(row.colByName(COLNAME_MNF_DATE) as String),
+          exp_date:  DateTime.parse(row.colByName(COLNAME_EXP_DATE) as String),
+          product: product,
+          grn: grn);
+
+      stocks.add(stock);
+    }
+
+    return stocks;
+  }
 
   Future<void> updateDefaultDiscount()async{
     final conn = await MySQLConnection.createConnection(
@@ -112,9 +138,8 @@ class Stock{
       password: AppData.dbPassword,
       databaseName: AppData.dbName, // optional
     );
-
     await conn.connect();
-    await conn.execute(SUBQTYQUARY, {"QTY":availbleQty,"ID":grn.id});
+    await conn.execute(SUBQTYQUARY, {"QTY":qty,"ID":grn.id});
     conn.close();
 
 
@@ -154,6 +179,33 @@ class Stock{
     await conn.execute(query);
     conn.close();
 
+  }
+
+ static Future<List<Stock>>  searchByBarcode({required String value , limit = 6 })async{
+     List<Stock> stocks =[];
+     String query = "SELECT * FROM `stock` WHERE stock.barcode LIKE '$value%' LIMIT $limit";
+     print(query);
+     var pool = MySQLDatabase().pool;
+     var results = await pool.execute(query);
+     for (var row in results.rows) {
+       GRN grn =await GRN.getByID(row.colByName(COLNAME_GRN)??"0");
+       Product product = await Product.getByID(row.colByName(COLNAME_PRODUCT)??"0");
+
+       Stock stock = Stock(
+           id: int.parse(row.colByName(COLNAME_ID)??"0"),
+           barcode: row.colByName(COLNAME_BARCODE) as String,
+           availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+           defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
+           retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
+           wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
+           mnf_date: DateTime.parse(row.colByName(COLNAME_MNF_DATE) as String),
+           exp_date:  DateTime.parse(row.colByName(COLNAME_EXP_DATE) as String),
+           product: product,
+           grn: grn);
+
+       stocks.add(stock);
+     }
+    return stocks;
   }
 
 

@@ -27,6 +27,7 @@ class Customer {
   static const String UPDATEQUERY = "UPDATE `customer` SET `name`=?, `mobile`=?, `address`=? WHERE  `customer_id`=?";
   static const String SELECTQUERY = "SELECT * FROM `customer` ";
   static const String SELECTBYIDQUERY = "SELECT * FROM `customer` where `customer_id`=:ID";
+  static const String SELECTBYMOBILEQUERY = "SELECT * FROM `customer` where `mobile`=:mobile";
   Future<void> insert() async {
     //   INSERT INTO `e-pos`.`customer` (`name`, `mobile`, `address`) VALUES ('s', 'm', 'a');
 
@@ -41,6 +42,29 @@ class Customer {
     var stmt = await conn.prepare(INSERTQUERY);
     await stmt.execute([name, contact, address]);
     await conn.close();
+  }
+  Future<Customer> insertAndGetCustomer() async {
+    //   INSERT INTO `e-pos`.`customer` (`name`, `mobile`, `address`) VALUES ('s', 'm', 'a');
+
+    final conn = await MySQLConnection.createConnection(
+      host: AppData.dbURL,
+      port: AppData.dbPORT,
+      userName: AppData.dbUser,
+      password: AppData.dbPassword,
+      databaseName: AppData.dbName, // optional
+    );
+    await conn.connect();
+    var stmt = await conn.prepare(INSERTQUERY);
+    var result  = await stmt.execute([name, contact, address]);
+    await conn.close();
+    var id =  result.lastInsertID;
+    Customer customer = Customer(
+      id: id.toInt(),
+      contact: contact,
+      name: name,
+      address:address,
+    );
+    return customer;
   }
 
   Future<void> update() async {
@@ -57,7 +81,7 @@ class Customer {
     await conn.close();
   }
 
-  static Future<List<Customer>> getAll()async{
+  static Future<List<Customer>> getAll({int limit = -1})async{
     List<Customer> customers = [];
     final conn = await MySQLConnection.createConnection(
       host: AppData.dbURL,
@@ -67,7 +91,11 @@ class Customer {
       databaseName: AppData.dbName, // optional
     );
     await conn.connect();
-    var results  = await conn.execute(SELECTQUERY);
+    var s = SELECTQUERY;
+    if(limit > 0){
+      s = SELECTQUERY + " LIMIT $limit";
+    }
+    var results  = await conn.execute(s);
     for (var row in results.rows) {
       customers.add(Customer(
         id: int.parse(row.colByName(COLNAME_ID) as String),
@@ -90,6 +118,7 @@ class Customer {
       name: result.rows.first.colByName(COLNAME_NAME) as String,
       address: result.rows.first.colByName(COLNAME_ADDRESS)as String,
     );
+    conn.close();
     return customer;
 
   }
@@ -109,5 +138,23 @@ class Customer {
     }
 
     return customers;
+  }
+
+  static Future<Customer?> getByMobile(String mobile)async{
+    final conn =MySQLDatabase().pool;
+    var result = await conn.execute(SELECTBYMOBILEQUERY,{"mobile":mobile});
+    if(result.rows.isEmpty){
+      print("null customer");
+      return null;
+    }
+    print("not null");
+    Customer customer = Customer(
+      id: int.parse(result.rows.first.colByName(COLNAME_ID) as String),
+      contact: result.rows.first.colByName(COLNAME_CONTACT) as  String,
+      name: result.rows.first.colByName(COLNAME_NAME) as String,
+      address: result.rows.first.colByName(COLNAME_ADDRESS)as String,
+    );
+    conn.close();
+    return customer;
   }
 }
