@@ -6,6 +6,7 @@ import '../models/main_category.dart';
 import '../models/product.dart';
 import '../models/sub_category.dart';
 import '../models/unit.dart';
+import 'add_product_screen.dart';
 
 class ProductScreen extends StatefulWidget {
   const ProductScreen({super.key});
@@ -15,6 +16,7 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
+  bool isTableView = true;
   List<Product> products = [];
   List<Product> searchedProducts = [];
   List<MainCategory> mainCategories = [];
@@ -140,7 +142,7 @@ class _ProductScreenState extends State<ProductScreen> {
               height: 10,
             ),
             SizedBox(
-              height: 100,
+              height: 80,
               child: ResponsiveGridList(
                 minItemWidth: 150,
                 rowMainAxisAlignment: MainAxisAlignment.center,
@@ -240,17 +242,155 @@ class _ProductScreenState extends State<ProductScreen> {
                                   .bodyStrong!
                                   .copyWith(color: Colors.white),
                             )),
-                      )
+                      ),
+
                     ],
                   ),
 
                 ],
               ),
+            ),
+            ToggleSwitch(
+              checked: isTableView,
+
+              content: Text(isTableView ? 'Table View' : 'Card View'),
+              onChanged: (bool value) {
+                setState(() {
+                  isTableView = value;
+                });
+              },
             )
           ],
         ),
       ),
-      content: ResponsiveGridList(
+      content:isTableView ? ListView(
+        children: [
+          Row(
+            children: [
+              Flexible(
+                flex: 1,
+                fit: FlexFit.tight,
+                child: _tableHead(context,"ID"),
+              ),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.tight,
+                child: _tableHead(context,"Barcode"),
+              ),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.tight,
+                child: _tableHead(context,"Main Category"),
+              ),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.tight,
+                child: _tableHead(context,"Sub Category"),
+              ),
+              Flexible(
+                flex: 2,
+                fit: FlexFit.tight,
+                child: _tableHead(context,"Unit"),
+              ),
+              Flexible(
+                flex: 3,
+                fit: FlexFit.tight,
+                child: _tableHead(context,"#"),
+              )
+            ],
+          ),
+          SizedBox(height: 10,),
+          ...searchedProducts.map((e) => Container(
+            height: 75,
+            margin: EdgeInsets.only(top: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: FluentTheme.of(context).cardColor
+            ),
+            child: Column(
+              children: [
+                // 1st row
+                Expanded(
+                  child: Row(
+                    children: [
+                      SizedBox(width: 20,),
+                      Expanded(
+                        child: Text(e.name,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 18)),
+                        flex: 5,
+                      ),
+                      Expanded(
+                        child: Text(e.siName,style: TextStyle(fontFamily:"NotoSansSinhala"),),
+                        flex: 4,
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: FilledButton(child: Text("Update"), onPressed: ()async{
+                          await Navigator.of(context).push(FluentDialogRoute(builder: (context) => AddProductScreen(product: e,isEditingMode: true), context: context));
+                          refresh();
+                        }),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: SizedBox(),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Flexible(
+                        flex: 1,
+                        fit: FlexFit.tight,
+                        child: _tableBodyCell(context,e.id.toString()),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: _tableBodyCell(context,e.barcode),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: _tableBodyCell(context,e.mainCategory.name),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: _tableBodyCell(context,e.subCategory.name),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: _tableBodyCell(context,e.unit.name),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        // fit: FlexFit.tight,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Button(child: Text("View Stock"), onPressed: (){}),
+                            ),
+                            SizedBox(width: 10,),
+                            Expanded(
+                              flex: 1,
+                              child: Button(child: Text("View Sales"), onPressed: (){}),
+                            ),
+
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                )
+
+              ],
+            ),
+          ))
+        ],
+      ): ResponsiveGridList(
         minItemWidth: 300,
         children: searchedProducts
             .map((e) => ProductCard(product: e,refresh:refresh ,))
@@ -261,3 +401,19 @@ class _ProductScreenState extends State<ProductScreen> {
 }
 
 
+Widget _tableHead(BuildContext context,String text){
+  return Container(
+    padding: EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+    decoration: BoxDecoration(
+      color: FluentTheme.of(context).accentColor.withOpacity(0.2)
+    ),
+    child: Text(text,textAlign: TextAlign.center,style:FluentTheme.of(context).typography.bodyStrong,),
+  );
+}
+
+Widget _tableBodyCell(BuildContext context,String text){
+  return Container(
+    padding: EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+    child: Text(text,textAlign: TextAlign.center,),
+  );
+}
