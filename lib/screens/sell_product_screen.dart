@@ -247,11 +247,15 @@ class _SellProductScreenState extends State<SellProductScreen> {
   }
 
   void calculateBalance(){
-    double cash = double.parse(_cashController.text);
-    invoiceBalance = cash - calculateInvoiceTotal();
-    setState(() {
+    if(_cashController.text.isNotEmpty){
+      double cash = double.parse(_cashController.text);
+      invoiceBalance = cash - calculateInvoiceTotal();
+      setState(() {
 
-    });
+      });
+    }else{
+    }
+
   }
 
 
