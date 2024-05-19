@@ -225,17 +225,19 @@ class _SellProductScreenState extends State<SellProductScreen> {
     setState(() {});
   }
 
-  void searchByProductName(String value) {
+  void searchByProductName(String value)async {
     searchStock.clear();
     if (value.isNotEmpty) {
-      for (Stock stock in stocks) {
-        if (stock.product.name.startsWith(value)) {
-          searchStock.add(stock);
-        }
-        if (stock.product.name == value) {
-          select(stock);
-        }
-      }
+      var result = await Stock.searchByName(value: value);
+      searchStock.addAll(result);
+      // for (Stock stock in stocks) {
+      //   if (stock.product.name.startsWith(value)) {
+      //     searchStock.add(stock);
+      //   }
+      //   if (stock.product.name == value) {
+      //     select(stock);
+      //   }
+      // }
     } else {
       searchStock.clear();
       searchStock.addAll(stocks);
