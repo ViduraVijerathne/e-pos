@@ -36,35 +36,54 @@ class Invoice{
   static const String INSERTQUERY = "INSERT INTO `invoice` (`barcode`, `customer_customer_id`, `invoice_total`, `invoice_all_descount`, `invoice_grand_total`, `paid_amount`, `balance`, `invoice_date`) VALUES (?,?,?,?,?,?,?,?)";
   static const String SELECTQUERY = "SELECT * FROM invoice ";
 
-  Future<void> insert()async{
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
+  // Future<int> insert()async{
+  //   final conn = MySQLDatabase().pool;
+  //   var smtp = await conn.prepare(INSERTQUERY);
+  //   var results = await smtp.execute([
+  //     barcode,
+  //     customer.id,
+  //     invoiceTotal,
+  //     discountTotal,
+  //     grandTotal,
+  //    paidAmount,
+  //     balance,
+  //     invoiceDate.toIso8601String()
+  //   ]);
+  //   print(results.lastInsertID);
+  //   id = results.lastInsertID.toInt();
+  //   conn.close();
+  //   return id;
+  // }
 
-    await conn.connect();
-    var smtp = await conn.prepare(INSERTQUERY);
-    var results = await smtp.execute([
-      barcode,
-      customer.id,
-      invoiceTotal,
-      discountTotal,
-      grandTotal,
-     paidAmount,
-      balance,
-      invoiceDate.toIso8601String()
-    ]);
-    print(results.lastInsertID);
-    id = results.lastInsertID.toInt();
-    for(var item in items){
-      item.invoiceID = results.lastInsertID.toInt();
+   Future<int> insert(MySQLConnection conn)async{
+     // final conn = MySQLDatabase().pool;
+     var smtp = await conn.prepare(INSERTQUERY);
+     var results = await smtp.execute([
+       barcode,
+       customer.id,
+       invoiceTotal,
+       discountTotal,
+       grandTotal,
+       paidAmount,
+       balance,
+       invoiceDate.toIso8601String()
+     ]);
+     print(results.lastInsertID);
+     id = results.lastInsertID.toInt();
+     return id;
+   }
 
-      await item.insert();
-    }
-    conn.close();
+  Future<void> insertItems()async{
+    var pool = MySQLDatabase().pool;
+    await pool.transactional((conn) async{
+      await insert(conn);
+      for(var item in items){
+        item.invoiceID = id;
+        await item.insert(con: conn);
+        await item.updateStock(conn: conn);
+      }
+    });
+
   }
 
   static Stream<List<Invoice>> getAll() async*{

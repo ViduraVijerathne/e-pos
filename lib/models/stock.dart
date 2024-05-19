@@ -130,19 +130,21 @@ class Stock{
     conn.close();
   }
   Future<void> subQty(int qty)async{
+    print("availbleQTY $availbleQty  Qty: $qty");
     availbleQty = availbleQty - qty;
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
-    await conn.connect();
+
+    // final conn = await MySQLConnection.createConnection(
+    //   host: AppData.dbURL,
+    //   port: AppData.dbPORT,
+    //   userName: AppData.dbUser,
+    //   password: AppData.dbPassword,
+    //   databaseName: AppData.dbName, // optional
+    // );
+    // await conn.connect();
+    final conn = MySQLDatabase().pool;
+
     await conn.execute(SUBQTYQUARY, {"QTY":qty,"ID":grn.id});
     conn.close();
-
-
   }
   static Future<Stock> getByID(String ID)async{
     List<Stock> stocks = [];

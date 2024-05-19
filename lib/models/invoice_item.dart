@@ -46,28 +46,38 @@ class InvoiceItem{
    " INNER JOIN suppliers ON suppliers.supplier_id= grn.suppliers_supplier_id "
 
    " WHERE invoice.invoice_id = :invoiceID";
-  Future<void> insert()async{
-   await stock.subQty(quantity);
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
+  Future<void> insert({required MySQLConnection con})async{
 
-    await conn.connect();
-    var smtp = await conn.prepare(INSERTQUERY);
-    var results = await smtp.execute([
-      invoiceID,
-      stock.id,
-      product.id,
-      grn.id,
-      quantity,
-      unitPrice,
-      discount,
-    ]);
-    conn.close();
+    // final conn = await MySQLConnection.createConnection(
+    //   host: AppData.dbURL,
+    //   port: AppData.dbPORT,
+    //   userName: AppData.dbUser,
+    //   password: AppData.dbPassword,
+    //   databaseName: AppData.dbName, // optional
+    // );
+    //
+    // await conn.connect();
+   // final conn = con ?? MySQLDatabase().c;
+    con.execute("INSERT INTO `invoice_has_stock` (`invoice_invoice_id`, `stock_id`, `stock_product_product_id`, `stock_grn_grn_id`, `invoice_qty`, `invoice_unit_price`, `discount`)  VALUES (:invoiceID,:stockID,:productID, :grnID,:itemQTY,:unitPrice,:dicount);",{
+      "invoiceID":invoiceID,
+      "stockID":stock.id,
+      "productID":product.id,
+      "grnID":grn.id,
+      "itemQTY":quantity,
+      "unitPrice":unitPrice,
+      "dicount":discount
+    });
+    // var results = await smtp.execute([
+    //   invoiceID,
+    //   stock.id,
+    //   product.id,
+    //   grn.id,
+    //   quantity,
+    //   unitPrice,
+    //   discount,
+    // ]);
+    // conn.close();
+    // await stock.subQty(quantity);
   }
 
   static Future<List<InvoiceItem>> getByInvoiceID(String invoiceID)async{
@@ -171,5 +181,10 @@ class InvoiceItem{
     }
     print("INVOICE ITEM Count  ${invoiceItems.length}");
     return invoiceItems;
+  }
+
+  Future<void> updateStock({required MySQLConnection conn}) async{
+    String query = "UPDATE `stock` SET `availble_qty`=`availble_qty`-$quantity WHERE  `id`=${stock.id}";
+    await conn.execute(query);
   }
 }

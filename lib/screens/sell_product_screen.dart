@@ -84,7 +84,11 @@ class _SellProductScreenState extends State<SellProductScreen> {
         invoiceTotal: invoiceTotal
         
       );
-      await invoice.insert();
+      // int invoiceID = await invoice.insert();
+      // print("INVOICE ID: $invoiceID");
+      // await Future.delayed(Duration(seconds: 3));
+      await invoice.insertItems();
+      print("INVOICE ITEMS ARE ADDED");
 
       await Printer.printInvoice(invoice);
       _cashController.text = 0.toString();
