@@ -1,9 +1,10 @@
 import 'package:mysql_client/mysql_client.dart';
+import 'package:point_of_sale/utils/database.dart';
 
 import '../utils/app_data.dart';
 
 class SubCategory{
-  final int id;
+   int id;
   final String name;
   SubCategory({required this.id,required this.name});
 
@@ -14,18 +15,14 @@ class SubCategory{
 
   Future<void>insert() async {
 
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
+    final conn = MySQLDatabase().pool;
 
 // actually connect to database
-    await conn.connect();
     var stmt = await conn.prepare(INSERTQUERY);
-    await stmt.execute([name]);
+    var result = await stmt.execute([name]);
+    int id = result.lastInsertID.toInt();
+    this.id = id;
+
     await conn.close();
 
   }

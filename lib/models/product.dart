@@ -43,18 +43,9 @@ class Product{
   static const String UPDATEQUERY = "UPDATE $TABLE_NAME SET $COLNAME_BARCODE =?, $COLNAME_NAME=?, $COLNAME_SI_NAME=?, $COLNAME_DESCRIPTION=?, $COLNAME_MAIN_CAT=?, $COLNAME_SUB_CAT=?, $COLNAME_UNIT=? WHERE  $COLNAME_ID=? ";
 
   Future<void >insert()async {
-
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
-
-
-
-    await conn.connect();
+    String q= "INSERT INTO `product` (`barcode`, `product_name`, `product_si_name`, `description`, `main_category_main_cat_id`, `sub_category_sub_cat_id`, `units_unit_id`) VALUES (${barcode},${name},${siName},${description},${mainCategory.id},${subCategory.id},${unit.id})";
+    print(q);
+    final conn = MySQLDatabase().pool;
     var stmt = await conn.prepare(INSERTQUERY);
     await stmt.execute([barcode,name,siName,description,mainCategory.id,subCategory.id,unit.id]);
     await conn.close();
@@ -165,5 +156,14 @@ class Product{
     }
 
     return products;
+  }
+  static Future<bool> barcodeExists(String barcode)async{
+    var pool = MySQLDatabase().pool;
+    var results = await pool.execute("SELECT * FROM product WHERE barcode = '$barcode' ");
+    if(results.rows.isEmpty){
+      return false;
+    }
+
+    return true;
   }
 }

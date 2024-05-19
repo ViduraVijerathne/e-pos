@@ -124,6 +124,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   MainCategory(id: 0, name: selectedMainCategoryStr);
               try {
                 await mainCat.insert();
+                selectedMainCategory = mainCat;
                 showMessageBox(
                     "Success !",
                     "Main Category Inserted Successfully",
@@ -169,6 +170,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   SubCategory(id: 0, name: selectedSubCategoryStr);
               try {
                 await subCat.insert();
+                selectedSubCategory = subCat;
                 showMessageBox(
                     "Success !",
                     "Sub Category Inserted Successfully",
@@ -213,6 +215,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               Unit unit = Unit(id: 0, name: selectedUnitStr);
               try {
                 await unit.insert();
+                selectedUnit = unit;
                 showMessageBox("Success !", "unit Inserted Successfully",
                     InfoBarSeverity.success);
                 loadUnit();
@@ -324,6 +327,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
       isLoading = true;
     });
     bool validation = await validateProduct();
+    if(widget.product!.barcode != _barcodeController.text){
+      bool isBarcodeAlreadyExist =await Product.barcodeExists(_barcodeController.text);
+      if(isBarcodeAlreadyExist){
+        validation = false;
+        showMessageBox("Error !", "Barcode Already Exists", InfoBarSeverity.error);
+
+      }
+    }
+
     if (validation) {
       Product product = Product(
           id: widget.product!.id,
@@ -346,6 +358,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         //     InfoBarSeverity.error);
       }
     } else {
+      await Future.delayed(const Duration(seconds: 3));
       showMessageBox(
           "Error", "Error Inserting new Product", InfoBarSeverity.error);
     }
@@ -360,7 +373,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
       isLoading = true;
     });
     bool validation = await validateProduct();
+    bool isBarcodeAlreadyExist =await Product.barcodeExists(_barcodeController.text);
+    if(isBarcodeAlreadyExist){
+      validation = false;
+      showMessageBox("Error !", "Barcode Already Exists", InfoBarSeverity.error);
+
+    }
+    print("Validated Product: ${validation}");
     if (validation) {
+      print("SELECTED MAIN CAT ID IS ${selectedMainCategory!.id}");
       Product product = Product(
           id: 0,
           barcode: _barcodeController.text,
@@ -381,6 +402,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             InfoBarSeverity.error);
       }
     } else {
+      await Future.delayed(const Duration(seconds: 3));
       showMessageBox(
           "Error", "Error Inserting new Product", InfoBarSeverity.error);
     }
