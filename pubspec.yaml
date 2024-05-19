@@ -93,6 +93,13 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
+    - family: NotoSansSinhala
+      fonts:
+        - asset: assets/fonts/NotoSansSinhala-Regular.ttf
+        - asset: assets/fonts/NotoSansSinhala-Bold.ttf
+    - family: AbhayaLibre
+      fonts:
+        - asset: assets/fonts/AbhayaLibre-Bold.ttf
     - family: OpenSans
       fonts:
         - asset: assets/fonts/OpenSans.ttf

@@ -206,13 +206,16 @@ class Printer{
   }
   Future<File> savePdfAndPrint(pw.Document pdf, String fileName) async {
     final directory = await getApplicationDocumentsDirectory(); // Get the app's documents directory
-    final path = '${directory.path}/invoices/$fileName';
+    final path = '${directory.path}\\invoices\\$fileName';
     final file = File(path); // Define the path and filename
     await file.writeAsBytes(await pdf.save()); // Save the PDF content to the file
 
     //Print file
     final command = 'print /d:default $path';
-    await Process.run('cmd', ['/c', command]);
+    ProcessResult result = await Process.run('cmd', ['/c', command]);
+    print(command);
+    print("Result: ${result.stdout}");
+    print("EXISTING CODE ${result.exitCode}");
     return file; // Return the saved file
   }
 

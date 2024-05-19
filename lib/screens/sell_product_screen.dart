@@ -48,58 +48,62 @@ class _SellProductScreenState extends State<SellProductScreen> {
   }
 
   void checkOut()async{
+    try{
+      if(invoiceItems.isNotEmpty){
+        print("customer selection");
+        Customer customer =  await selectCustomer();
 
-    if(invoiceItems.isNotEmpty){
-      print("customer selection");
-      Customer customer =  await selectCustomer();
-      
-      double discountTotal = 0;
-      double grandTotal = 0; //total price without discount
-      double paidAmount = double.parse(_cashController.text);
-      double invoiceTotal = 0; //total price with discount
-      
-      for (InvoiceItem invoiceItem in invoiceItems){
+        double discountTotal = 0;
+        double grandTotal = 0; //total price without discount
+        double paidAmount = double.parse(_cashController.text);
+        double invoiceTotal = 0; //total price with discount
 
-        double unitPrice = invoiceItem.unitPrice;
-        double unitDiscount = invoiceItem.discount;
-        double unitFinalPrice = unitPrice - unitDiscount;
-        double itemTotalPrice = unitFinalPrice* invoiceItem.quantity;
+        for (InvoiceItem invoiceItem in invoiceItems){
+
+          double unitPrice = invoiceItem.unitPrice;
+          double unitDiscount = invoiceItem.discount;
+          double unitFinalPrice = unitPrice - unitDiscount;
+          double itemTotalPrice = unitFinalPrice* invoiceItem.quantity;
 
 
-        grandTotal += invoiceItem.quantity * unitPrice;
-        discountTotal += invoiceItem.quantity * unitDiscount;
+          grandTotal += invoiceItem.quantity * unitPrice;
+          discountTotal += invoiceItem.quantity * unitDiscount;
+        }
+
+        invoiceTotal = grandTotal - discountTotal;
+        Invoice invoice = Invoice(
+            id: 0,
+            barcode: BarcodeGenerator.generateRandomInvoiceBarcode(),
+            customer: customer,
+            items: invoiceItems,
+            balance: invoiceBalance,
+            invoiceDate: DateTime.now(),
+            discountTotal: discountTotal,
+            grandTotal: grandTotal,
+            paidAmount: paidAmount,
+            invoiceTotal: invoiceTotal
+
+        );
+        // int invoiceID = await invoice.insert();
+        // print("INVOICE ID: $invoiceID");
+        // await Future.delayed(Duration(seconds: 3));
+        await invoice.insertItems();
+        print("INVOICE ITEMS ARE ADDED");
+
+        await Printer.printInvoice(invoice);
+        _cashController.text = 0.toString();
+        clear();
+        invoiceItems.clear();
+        setState(() {
+
+        });
+
+      }else{
       }
-
-      invoiceTotal = grandTotal - discountTotal;
-      Invoice invoice = Invoice(
-        id: 0,
-        barcode: BarcodeGenerator.generateRandomInvoiceBarcode(),
-        customer: customer,
-        items: invoiceItems,
-        balance: invoiceBalance,
-        invoiceDate: DateTime.now(),
-        discountTotal: discountTotal,
-        grandTotal: grandTotal,
-        paidAmount: paidAmount,
-        invoiceTotal: invoiceTotal
-        
-      );
-      // int invoiceID = await invoice.insert();
-      // print("INVOICE ID: $invoiceID");
-      // await Future.delayed(Duration(seconds: 3));
-      await invoice.insertItems();
-      print("INVOICE ITEMS ARE ADDED");
-
-      await Printer.printInvoice(invoice);
-      _cashController.text = 0.toString();
-      clear();
-      setState(() {
-
-      });
-
-    }else{
+    }catch(e){
 
     }
+
 
   }
   void loadMoreStocks()async{

@@ -514,6 +514,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
               labelStyle: FluentTheme.of(context).typography.bodyStrong,
               child: TextBox(
                 controller: _productSinhalaNameController,
+                style: TextStyle(
+                  fontFamily: 'NotoSansSinhala'
+                ),
                 placeholder: "Product Sinhala Name ",
               ),
             ),
