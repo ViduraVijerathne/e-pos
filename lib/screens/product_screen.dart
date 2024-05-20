@@ -28,15 +28,26 @@ class _ProductScreenState extends State<ProductScreen> {
   Unit? selectedUnit;
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productNameController = TextEditingController();
+  final ScrollController _tableScrollController = ScrollController();
+  final ScrollController _cardScrollController = ScrollController();
 
   void loadProducts() async {
-    products = await Product.getAll();
+    products = await Product.getAllWithLimit();
     searchedProducts.addAll(products);
     if (mounted) {
       setState(() {});
     }
   }
-
+  void loadMoreProduct()async{
+    int limit = products.length+10;
+    products.clear();
+    searchedProducts.clear();
+    products = await Product.getAllWithLimit(limit:limit );
+    searchedProducts.addAll(products);
+    if (mounted) {
+      setState(() {});
+    }
+  }
   void loadMainCat() async {
     mainCategories = await MainCategory.getAll();
     if (mounted) {
@@ -58,12 +69,31 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
+  void _onScroll() {
+    if (_tableScrollController.position.atEdge) {
+      bool isBottom = _tableScrollController.position.pixels == _tableScrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadMoreProduct();
+      }
+    }
+  }
+  void _onScrollCard() {
+    if (_cardScrollController.position.atEdge) {
+      bool isBottom = _cardScrollController.position.pixels == _cardScrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadMoreProduct();
+      }
+    }
+  }
+
   @override
   void initState() {
     loadProducts();
     loadMainCat();
     loadSubCat();
     loadUnit();
+    _tableScrollController.addListener(_onScroll); // Add scroll listener
+    _cardScrollController.addListener(_onScrollCard);
     super.initState();
   }
 
@@ -263,139 +293,177 @@ class _ProductScreenState extends State<ProductScreen> {
           ],
         ),
       ),
-      content:isTableView ? ListView(
-        children: [
-          Row(
-            children: [
-              Flexible(
-                flex: 1,
-                fit: FlexFit.tight,
-                child: _tableHead(context,"ID"),
-              ),
-              Flexible(
-                flex: 2,
-                fit: FlexFit.tight,
-                child: _tableHead(context,"Barcode"),
-              ),
-              Flexible(
-                flex: 2,
-                fit: FlexFit.tight,
-                child: _tableHead(context,"Main Category"),
-              ),
-              Flexible(
-                flex: 2,
-                fit: FlexFit.tight,
-                child: _tableHead(context,"Sub Category"),
-              ),
-              Flexible(
-                flex: 2,
-                fit: FlexFit.tight,
-                child: _tableHead(context,"Unit"),
-              ),
-              Flexible(
-                flex: 3,
-                fit: FlexFit.tight,
-                child: _tableHead(context,"#"),
-              )
-            ],
-          ),
-          SizedBox(height: 10,),
-          ...searchedProducts.map((e) => Container(
-            height: 75,
-            margin: EdgeInsets.only(top: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: FluentTheme.of(context).cardColor
-            ),
-            child: Column(
+      content:AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return SlideTransition(
+                child: child,
+                position: Tween<Offset>(
+                  begin: const Offset(1, 0),
+                  end: Offset.zero,
+                ).animate(animation),
+            );
+
+            // return ScaleTransition(
+            //   scale: animation,
+            //   child: child,
+            // );
+            // return SizeTransition(
+            //   sizeFactor: animation,
+            //   axis: Axis.vertical,
+            //   child: child,
+            // );
+            // return FadeTransition(
+            //   opacity: animation,
+            //   child: ScaleTransition(
+            //     scale: animation,
+            //     child: child,
+            //   ),
+            // );
+          },
+        child:isTableView ?
+        ListView(
+          key: ValueKey<bool>(isTableView),
+          controller: _tableScrollController,
+          children: [
+            Row(
               children: [
-                // 1st row
-                Expanded(
-                  child: Row(
-                    children: [
-                      SizedBox(width: 20,),
-                      Expanded(
-                        child: Text(e.name,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 18)),
-                        flex: 5,
-                      ),
-                      Expanded(
-                        child: Text(e.siName,style: TextStyle(fontFamily:"NotoSansSinhala"),),
-                        flex: 4,
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: FilledButton(child: Text("Update"), onPressed: ()async{
-                          await Navigator.of(context).push(FluentDialogRoute(builder: (context) => AddProductScreen(product: e,isEditingMode: true), context: context));
-                          refresh();
-                        }),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: SizedBox(),
-                      ),
-                    ],
-                  ),
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.tight,
+                  child: _tableHead(context,"ID"),
                 ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        fit: FlexFit.tight,
-                        child: _tableBodyCell(context,e.id.toString()),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: _tableBodyCell(context,e.barcode),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: _tableBodyCell(context,e.mainCategory.name),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: _tableBodyCell(context,e.subCategory.name),
-                      ),
-                      Flexible(
-                        flex: 2,
-                        fit: FlexFit.tight,
-                        child: _tableBodyCell(context,e.unit.name),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        // fit: FlexFit.tight,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Button(child: Text("View Stock"), onPressed: (){}),
-                            ),
-                            SizedBox(width: 10,),
-                            Expanded(
-                              flex: 1,
-                              child: Button(child: Text("View Sales"), onPressed: (){}),
-                            ),
-
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.tight,
+                  child: _tableHead(context,"Barcode"),
+                ),
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.tight,
+                  child: _tableHead(context,"Main Category"),
+                ),
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.tight,
+                  child: _tableHead(context,"Sub Category"),
+                ),
+                Flexible(
+                  flex: 2,
+                  fit: FlexFit.tight,
+                  child: _tableHead(context,"Unit"),
+                ),
+                Flexible(
+                  flex: 3,
+                  fit: FlexFit.tight,
+                  child: _tableHead(context,"#"),
                 )
-
               ],
             ),
-          ))
-        ],
-      ): ResponsiveGridList(
-        minItemWidth: 300,
-        children: searchedProducts
-            .map((e) => ProductCard(product: e,refresh:refresh ,))
-            .toList(),
-      ),
+            SizedBox(height: 10,),
+            ...searchedProducts.map((e) => Container(
+              height: 75,
+              margin: EdgeInsets.only(top: 10),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: FluentTheme.of(context).cardColor
+              ),
+              child: Column(
+                children: [
+                  // 1st row
+                  Expanded(
+                    child: Row(
+                      children: [
+                        SizedBox(width: 20,),
+                        Expanded(
+                          child: Text(e.name,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 18)),
+                          flex: 5,
+                        ),
+                        Expanded(
+                          child: Text(e.siName,style: TextStyle(fontFamily:"NotoSansSinhala"),),
+                          flex: 4,
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: FilledButton(child: Text("Update"), onPressed: ()async{
+                            await Navigator.of(context).push(FluentDialogRoute(builder: (context) => AddProductScreen(product: e,isEditingMode: true), context: context));
+                            refresh();
+                          }),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: SizedBox(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          fit: FlexFit.tight,
+                          child: _tableBodyCell(context,e.id.toString()),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          fit: FlexFit.tight,
+                          child: _tableBodyCell(context,e.barcode),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          fit: FlexFit.tight,
+                          child: _tableBodyCell(context,e.mainCategory.name),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          fit: FlexFit.tight,
+                          child: _tableBodyCell(context,e.subCategory.name),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          fit: FlexFit.tight,
+                          child: _tableBodyCell(context,e.unit.name),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          // fit: FlexFit.tight,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Button(child: Text("View Stock"), onPressed: (){}),
+                              ),
+                              SizedBox(width: 10,),
+                              Expanded(
+                                flex: 1,
+                                child: Button(child: Text("View Sales"), onPressed: (){}),
+                              ),
+
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+
+                ],
+              ),
+            ))
+          ],
+        ):
+        ResponsiveGridList(
+          minItemWidth: 300,
+          listViewBuilderOptions: ListViewBuilderOptions(
+            controller: _cardScrollController,
+          ),
+          children: searchedProducts
+              .map((e) => ProductCard(product: e,refresh:refresh ,))
+              .toList(),
+        ) ,
+      )
+
+
     );
   }
 }

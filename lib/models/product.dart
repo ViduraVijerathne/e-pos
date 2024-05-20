@@ -82,6 +82,30 @@ class Product{
     await conn.close();
     return products;
   }
+  static Future<List<Product>> getAllWithLimit({int limit = 10}) async {
+    List<Product> products = [];
+    final conn = MySQLDatabase().pool;
+    var results = await conn.execute("$SELECTQUERY LIMIT $limit");
+    for (var row in results.rows) {
+      String id = row.colByName(COLNAME_ID)?? "0";
+      String barcode = row.colByName(COLNAME_BARCODE)?? "0";
+      String name = row.colByName(COLNAME_NAME)as String;
+      String siName = row.colByName(COLNAME_SI_NAME)as String;
+      String description = row.colByName(COLNAME_DESCRIPTION)as String;
+
+      int mainCategoryId = int.parse(row.colByName(MainCategory.COLNAME_ID)!);
+      int subCategoryId = int.parse(row.colByName(SubCategory.COLNAME_ID)!);
+      int unitId = int.parse(row.colByName(Unit.COLNAME_ID)!);
+
+      MainCategory mainCategory = MainCategory(id: mainCategoryId,name: row.colByName(MainCategory.COLNAME_NAME)!);
+      SubCategory subCategory = SubCategory(id: subCategoryId,name: row.colByName(SubCategory.COLNAME_NAME)!);
+      Unit unit = Unit(id: unitId,name: row.colByName(Unit.COLNAME_NAME)!);
+
+      products.add(Product(id: int.parse(id),barcode: barcode,name: name,siName: siName,description: description,mainCategory: mainCategory,subCategory: subCategory,unit: unit));
+    }
+    await conn.close();
+    return products;
+  }
 
   Future<void > update()async{
     final conn = await MySQLConnection.createConnection(
