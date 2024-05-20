@@ -8,8 +8,9 @@ class ProductCard extends StatelessWidget {
   final leftFlex = 135.0;
   final rightFlex = 150.0;
   final VoidCallback refresh;
-
-  const ProductCard({super.key, required this.product,required this.refresh});
+  final Function(Product product) viewStock;
+  final Function(Product product) viewProductSales;
+  const ProductCard({super.key, required this.product,required this.refresh, required this.viewStock, required this.viewProductSales});
 
   @override
   Widget build(BuildContext context) {
@@ -320,8 +321,12 @@ class ProductCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              FilledButton(child: Text("View Stocks"), onPressed: (){}),
-              FilledButton(child: Text("View Sales"), onPressed: (){}),
+              FilledButton(child: Text("View Stocks"), onPressed: (){
+                viewStock(product);
+              }),
+              FilledButton(child: Text("View Sales"), onPressed: (){
+                viewProductSales(product);
+              }),
               FilledButton(child: Text("Update"), onPressed: ()async{
 
                 await Navigator.of(context).push(FluentDialogRoute(builder: (context) => AddProductScreen(product: product,isEditingMode: true), context: context));

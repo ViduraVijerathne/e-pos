@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:point_of_sale/models/product.dart';
 import 'package:point_of_sale/models/supplier.dart';
 import 'package:point_of_sale/widget/grn_card.dart';
 import 'package:point_of_sale/widget/product_card.dart';
@@ -25,7 +26,7 @@ class _StockCardWidgetState extends State<StockCardWidget> {
     Navigator.of(context).push(FluentDialogRoute(builder: (context) =>GRNCard(grn: widget.stock.grn, refresh: (){}, supplierOtherGRNs: (Supplier supplier){}, productOtherGRNs: (p0){},) , context: context));
   }
   void viewProduct(){
-    Navigator.of(context).push(FluentDialogRoute(builder: (context) => ProductCard(product: widget.stock.product, refresh: (){}), context: context));
+    Navigator.of(context).push(FluentDialogRoute(builder: (context) => ProductCard(product: widget.stock.product, refresh: (){}, viewStock: (Product product) {  }, viewProductSales: (Product product) {  },), context: context));
   }
 
   void viewSupplier(){

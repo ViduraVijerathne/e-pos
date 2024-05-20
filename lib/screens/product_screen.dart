@@ -1,12 +1,15 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/product_search_controller.dart';
+import 'package:point_of_sale/screens/stock_screen.dart';
 import 'package:point_of_sale/widget/product_card.dart';
+import 'package:point_of_sale/widget/view_product_sales_widget.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/main_category.dart';
 import '../models/product.dart';
 import '../models/sub_category.dart';
 import '../models/unit.dart';
+import '../widget/ProductStockViewWidget.dart';
 import 'add_product_screen.dart';
 
 class ProductScreen extends StatefulWidget {
@@ -168,6 +171,16 @@ class _ProductScreenState extends State<ProductScreen> {
 
       });
     }
+  }
+
+  void viewStock(Product product)async{
+    await Navigator.push(context, FluentDialogRoute(builder: (context) => ProductStockViewWidget(product: product), context: context,));
+    refresh();
+  }
+
+  void viewProductSales(Product product){
+    Navigator.of(context).push(FluentDialogRoute(builder: (context) =>ViewProductSalesWidget(product: product,) , context: context));
+
   }
 
   @override
@@ -451,12 +464,16 @@ class _ProductScreenState extends State<ProductScreen> {
                             children: [
                               Expanded(
                                 flex: 1,
-                                child: Button(child: Text("View Stock"), onPressed: (){}),
+                                child: Button(child: Text("View Stock"), onPressed: () {
+                                  viewStock(e);
+                                },),
                               ),
                               SizedBox(width: 10,),
                               Expanded(
                                 flex: 1,
-                                child: Button(child: Text("View Sales"), onPressed: (){}),
+                                child: Button(child: Text("View Sales"), onPressed: (){
+                                  viewProductSales(e);
+                                }),
                               ),
 
                             ],
@@ -477,7 +494,7 @@ class _ProductScreenState extends State<ProductScreen> {
             controller: _cardScrollController,
           ),
           children: searchedProducts
-              .map((e) => ProductCard(product: e,refresh:refresh ,))
+              .map((e) => ProductCard(product: e,refresh:refresh ,viewStock: viewStock,viewProductSales: viewProductSales,))
               .toList(),
         ) ,
       )
