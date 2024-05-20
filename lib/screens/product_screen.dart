@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:point_of_sale/constrollers/product_search_controller.dart';
 import 'package:point_of_sale/widget/product_card.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
@@ -30,7 +31,7 @@ class _ProductScreenState extends State<ProductScreen> {
   final TextEditingController _productNameController = TextEditingController();
   final ScrollController _tableScrollController = ScrollController();
   final ScrollController _cardScrollController = ScrollController();
-
+  ProductSearchController productSearchController = ProductSearchController();
   void loadProducts() async {
     products = await Product.getAllWithLimit();
     searchedProducts.addAll(products);
@@ -105,29 +106,47 @@ class _ProductScreenState extends State<ProductScreen> {
     _productNameController.text = "";
     searchedProducts.clear();
     searchedProducts.addAll(products);
+    productSearchController.conditions.clear();
     setState(() {});
   }
 
   void search() async {
+
     searchedProducts.clear();
-    print(products.length);
-    for (Product p in products) {
-
-      if (_barcodeController.text.isNotEmpty && p.barcode == _barcodeController.text) {
-          searchedProducts.add(p);
-      }
-      else if (_productNameController.text.isNotEmpty && p.name.toLowerCase().contains(_productNameController.text.toLowerCase())) {
-        searchedProducts.add(p);
-      }else if(selectedMainCategory != null && p.mainCategory.id == selectedMainCategory!.id){
-        searchedProducts.add(p);
-    }else if(selectedSubCategory != null && p.subCategory.id == selectedSubCategory!.id){
-        searchedProducts.add(p);
-      }else if(selectedUnit != null && p.unit.id == selectedUnit!.id){
-        searchedProducts.add(p);
-      }
-
-
+    if (_barcodeController.text.isNotEmpty) {
+      productSearchController.searchByBarcode(_barcodeController.text);
     }
+    if (_productNameController.text.isNotEmpty) {
+      productSearchController.searchByName(_productNameController.text);
+    }
+    if(selectedMainCategory != null){
+      productSearchController.searchByCategory(selectedMainCategory!);
+    }
+    if(selectedSubCategory != null){
+      productSearchController.searchBySubCategory(selectedSubCategory!);
+    }
+    if(selectedUnit != null){
+      productSearchController.searchByUnit(selectedUnit!);
+    }
+    searchedProducts.addAll(await productSearchController.search());
+
+    // for (Product p in products) {
+    //
+    //   if (_barcodeController.text.isNotEmpty && p.barcode == _barcodeController.text) {
+    //       searchedProducts.add(p);
+    //   }
+    //   else if (_productNameController.text.isNotEmpty && p.name.toLowerCase().contains(_productNameController.text.toLowerCase())) {
+    //     searchedProducts.add(p);
+    //   }else if(selectedMainCategory != null && p.mainCategory.id == selectedMainCategory!.id){
+    //     searchedProducts.add(p);
+    // }else if(selectedSubCategory != null && p.subCategory.id == selectedSubCategory!.id){
+    //     searchedProducts.add(p);
+    //   }else if(selectedUnit != null && p.unit.id == selectedUnit!.id){
+    //     searchedProducts.add(p);
+    //   }
+    //
+    //
+    // }
     setState(() {
 
     });
