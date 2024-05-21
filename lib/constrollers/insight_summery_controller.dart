@@ -107,7 +107,7 @@ class InsightSummery{
         id:int.parse(row.colByName(GRN.COLNAME_ID) as String),
         barcode: row.colByName(GRN.COLNAME_BARCODE)as String,
         grnDate: DateTime.parse(row.colByName(GRN.COLNAME_GRN_DATE)as String),
-        quantity: int.parse(row.colByName(GRN.COLNAME_QUANTITY)as String),
+        quantity: double.parse(row.colByName(GRN.COLNAME_QUANTITY)as String),
         description: row.colByName(GRN.COLNAME_DESCRIPTION)as String,
         mnfDate: DateTime.parse(row.colByName(GRN.COLNAME_MNF_DATE)as String),
         expDate: DateTime.parse(row.colByName(GRN.COLNAME_EXP_DATE)as String),
@@ -164,7 +164,7 @@ class InsightSummery{
       Stock stock = Stock(
           id: int.parse(row.colByName(Stock.COLNAME_ID)??"0"),
           barcode: row.colByName(Stock.COLNAME_BARCODE) as String,
-          availbleQty: int.parse(row.colByName(Stock.COLNAME_AVAILBLE_QTY)?? "0"),
+          availbleQty: double.parse(row.colByName(Stock.COLNAME_AVAILBLE_QTY)?? "0"),
           defaultDiscount: double.parse(row.colByName(Stock.COLNAME_DEFAULT_DISCOUNT)?? "0"),
           retailPrice: double.parse(row.colByName(Stock.COLNAME_RETAIL_PRICE)?? "0"),
           wholesalePrice: double.parse(row.colByName(Stock.COLNAME_WHOLESALE_PRICE)?? "0"),
@@ -223,7 +223,7 @@ class InsightSummery{
       Stock stock = Stock(
           id: int.parse(row.colByName(Stock.COLNAME_ID)??"0"),
           barcode: row.colByName(Stock.COLNAME_BARCODE) as String,
-          availbleQty: int.parse(row.colByName(Stock.COLNAME_AVAILBLE_QTY)?? "0"),
+          availbleQty: double.parse(row.colByName(Stock.COLNAME_AVAILBLE_QTY)?? "0"),
           defaultDiscount: double.parse(row.colByName(Stock.COLNAME_DEFAULT_DISCOUNT)?? "0"),
           retailPrice: double.parse(row.colByName(Stock.COLNAME_RETAIL_PRICE)?? "0"),
           wholesalePrice: double.parse(row.colByName(Stock.COLNAME_WHOLESALE_PRICE)?? "0"),

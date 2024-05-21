@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/invoice.dart';
 import '../models/stock.dart';
+import '../utils/decimal_input_formatter.dart';
 import '../widget/select_customer_widget.dart';
 
 class SellProductScreen extends StatefulWidget {
@@ -149,7 +150,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
       InvoiceItem invoiceItem = InvoiceItem(
           invoiceID: 0,
           grn: selectedStock!.grn,
-          quantity: int.parse(_quantityController.text),
+          quantity: double.parse(_quantityController.text),
           product: selectedStock!.product,
           discount: double.parse(_itemDiscount.text),
           stock: selectedStock!,
@@ -314,7 +315,7 @@ class _SellProductScreenState extends State<SellProductScreen> {
                     child: TextBox(
                         placeholder: "Quantity",
                         inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly
+                          DecimalTextInputFormatter(),
                         ],
                         controller: _quantityController),
                   ),

@@ -9,7 +9,7 @@ class Stock{
 
   final int id;
   final String barcode;
-   int availbleQty;
+   double availbleQty;
   final double retailPrice;
   final double wholesalePrice;
   final DateTime mnf_date;
@@ -75,7 +75,7 @@ class Stock{
       Stock stock = Stock(
           id: int.parse(row.colByName(COLNAME_ID)??"0"),
           barcode: row.colByName(COLNAME_BARCODE) as String,
-          availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+          availbleQty: double.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
           defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
           retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
           wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
@@ -101,7 +101,7 @@ class Stock{
       Stock stock = Stock(
           id: int.parse(row.colByName(COLNAME_ID)??"0"),
           barcode: row.colByName(COLNAME_BARCODE) as String,
-          availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+          availbleQty: double.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
           defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
           retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
           wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
@@ -159,7 +159,7 @@ class Stock{
       Stock stock = Stock(
           id: int.parse(row.colByName(COLNAME_ID)??"0"),
           barcode: row.colByName(COLNAME_BARCODE) as String,
-          availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+          availbleQty: double.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
           defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
           retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
           wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
@@ -196,7 +196,7 @@ class Stock{
        Stock stock = Stock(
            id: int.parse(row.colByName(COLNAME_ID)??"0"),
            barcode: row.colByName(COLNAME_BARCODE) as String,
-           availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+           availbleQty: double.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
            defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
            retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
            wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
@@ -221,7 +221,7 @@ class Stock{
       Stock stock = Stock(
           id: int.parse(row.colByName(COLNAME_ID)??"0"),
           barcode: row.colByName(COLNAME_BARCODE) as String,
-          availbleQty: int.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+          availbleQty: double.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
           defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
           retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
           wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),

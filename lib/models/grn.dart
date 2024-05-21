@@ -13,7 +13,7 @@ class GRN{
   final String barcode;
   final Product product;
   final Supplier supplier;
-  final int quantity;
+  final double quantity;
   final double wholesalePrice;
   final double retailPrice;
   final double value;
@@ -86,7 +86,7 @@ class GRN{
         id:int.parse(row.colByName(COLNAME_ID) as String),
         barcode: row.colByName(COLNAME_BARCODE)as String,
         grnDate: DateTime.parse(row.colByName(COLNAME_GRN_DATE)as String),
-        quantity: int.parse(row.colByName(COLNAME_QUANTITY)as String),
+        quantity: double.parse(row.colByName(COLNAME_QUANTITY)as String),
         description: row.colByName(COLNAME_DESCRIPTION)as String,
         mnfDate: DateTime.parse(row.colByName(COLNAME_MNF_DATE)as String),
         expDate: DateTime.parse(row.colByName(COLNAME_EXP_DATE)as String),
@@ -165,7 +165,7 @@ class GRN{
         id:int.parse(row.colByName(COLNAME_ID) as String),
         barcode: row.colByName(COLNAME_BARCODE)as String,
         grnDate: DateTime.parse(row.colByName(COLNAME_GRN_DATE)as String),
-        quantity: int.parse(row.colByName(COLNAME_QUANTITY)as String),
+        quantity: double.parse(row.colByName(COLNAME_QUANTITY)as String),
         description: row.colByName(COLNAME_DESCRIPTION)as String,
         mnfDate: DateTime.parse(row.colByName(COLNAME_MNF_DATE)as String),
         expDate: DateTime.parse(row.colByName(COLNAME_EXP_DATE)as String),
@@ -224,7 +224,7 @@ class GRN{
         id:int.parse(row.colByName(COLNAME_ID) as String),
         barcode: row.colByName(COLNAME_BARCODE)as String,
         grnDate: DateTime.parse(row.colByName(COLNAME_GRN_DATE)as String),
-        quantity: int.parse(row.colByName(COLNAME_QUANTITY)as String),
+        quantity: double.parse(row.colByName(COLNAME_QUANTITY)as String),
         description: row.colByName(COLNAME_DESCRIPTION)as String,
         mnfDate: DateTime.parse(row.colByName(COLNAME_MNF_DATE)as String),
         expDate: DateTime.parse(row.colByName(COLNAME_EXP_DATE)as String),

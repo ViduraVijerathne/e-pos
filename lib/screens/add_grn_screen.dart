@@ -29,7 +29,7 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
   final TextEditingController _douedController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-  int _quantityController = 0;
+  double _quantityController = 0;
   double  _wholesaleController = 0;
   double _retailController = 0;
   double _paidController = 0;
@@ -289,10 +289,10 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
 
           InfoLabel(
             label: "Quantity",
-            child: NumberBox<int>(
+            child: NumberBox<double>(
               value: _quantityController,
               placeholder: "Quantity",
-              onChanged: (int? value) {
+              onChanged: (double? value) {
                 if(value != null){
                   _quantityController = value;
 
