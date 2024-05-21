@@ -2,12 +2,14 @@ import 'dart:ui';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/grn_search_controller.dart';
+import 'package:point_of_sale/constrollers/search_grn_controller.dart';
 import 'package:point_of_sale/models/supplier.dart';
 import 'package:point_of_sale/widget/grn_card.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/grn.dart';
 import '../models/product.dart';
+import '../utils/other_utils.dart';
 import '../widget/grn_date_filter_widget.dart';
 
 class GRNScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class GRNScreen extends StatefulWidget {
 class _GRNScreenState extends State<GRNScreen> {
   List<GRN> grns = [];
   List<GRN> searchedGRNs = [];
+  List<int> grnsIds = [];
 
   List<Product> products = [];
   List<Supplier> suppliers = [];
@@ -35,40 +38,49 @@ class _GRNScreenState extends State<GRNScreen> {
   final TextEditingController _productController = TextEditingController();
   final TextEditingController _supplierController = TextEditingController();
 
-
+  SearchGRNController searchGRNController = SearchGRNController();
   DateTime? grnDate;
 
 
-  void search() {
+  void search() async{
     searchedGRNs.clear();
-    GRNSearchController controller = GRNSearchController(grns: grns);
+    // GRNSearchController controller = GRNSearchController(grns: grns);
     if(_productBarcodeController.text.isNotEmpty){
-      controller.searchByProductBarcode(_productBarcodeController.text);
+      searchGRNController.searchByProductBarcode(_productBarcodeController.text);
     }
     if(_grnBarcodeController.text.isNotEmpty){
-      controller.searchByGRNBarcode(_grnBarcodeController.text);
+      searchGRNController.searchByBarcode(_grnBarcodeController.text);
     }
     if(selectedProduct != null){
-      controller.searchByProduct(selectedProduct!);
+      searchGRNController.searchByProductID(selectedProduct!.id);
     }else if(_productController.text.isNotEmpty){
-      controller.searchByProductName(_productController.text);
+      searchGRNController.searchByProductName(_productController.text);
     }
 
     if(selectedSupplier != null){
-      controller.searchBySupplier(selectedSupplier!);
+      searchGRNController.searchBySupplierID(selectedSupplier!.id);
     }else if(_supplierController.text.isNotEmpty){
-      controller.searchBySupplierName(_supplierController.text);
+      searchGRNController.searchBySupplierMobile(_supplierController.text);
     }
 
     if(dueAmountGraterThan != 0){
-      controller.searchByDueAmountGraterThan(dueAmountGraterThan);
+      searchGRNController.searchByDueAmountGraterThan(dueAmountGraterThan);
     }
     if(dueAmountLessThan != 0){
-      controller.searchByDueAmountLessThan(dueAmountLessThan);
+      searchGRNController.searchByDueAmountLessThan(dueAmountLessThan);
     }
 
 
-    searchedGRNs.addAll(controller.getGRNs());
+    if(grnDate != null){
+      searchGRNController.searchByGRNDateFrom(grnDate!);
+    }
+    if(grnDate != null){
+      searchGRNController.searchByGRNDateTo(grnDate!);
+    }
+
+    searchedGRNs.clear();
+
+    searchedGRNs.addAll(await searchGRNController.search());
     if (mounted) {
       setState(() {});
     }
@@ -86,6 +98,7 @@ class _GRNScreenState extends State<GRNScreen> {
     print("Refreshing GRNS");
     searchedGRNs.clear();
     grns.clear();
+    grnsIds.clear();
     loadGRNs();
     setState(() {});
   }
@@ -94,9 +107,16 @@ class _GRNScreenState extends State<GRNScreen> {
    if(widget.viewingGRNs != null){
     grns = widget.viewingGRNs!;
    }else{
-     grns = await GRN.getAll();
+     final grnList = await GRN.getAllWithLimit(limit: grns.length + 5);
+     for(var grn in grnList){
+       if(!grnsIds.contains(grn.id)){
+         grns.add(grn);
+         searchedGRNs.add(grn);
+         grnsIds.add(grn.id);
+       }
+     }
    }
-    searchedGRNs.addAll(grns);
+
     if (mounted) {
       setState(() {});
     }
@@ -141,8 +161,21 @@ class _GRNScreenState extends State<GRNScreen> {
     }
   }
 
+
+  final _scrollController = ScrollController();
+
+  void _onScroll() {
+    if (_scrollController.position.atEdge) {
+      bool isBottom = _scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadGRNs();
+      }
+    }
+  }
   @override
   void initState() {
+    _scrollController.addListener(_onScroll); // Add scroll listener
     loadGRNs();
     loadSuppliers();
     loadProducts();
@@ -205,6 +238,7 @@ class _GRNScreenState extends State<GRNScreen> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage.scrollable(
+      scrollController: _scrollController,
       header: Align(
         alignment: Alignment.center,
         child: Text(
@@ -382,20 +416,162 @@ class _GRNScreenState extends State<GRNScreen> {
             ),
           ),
         ),
-        ResponsiveGridList(
-            minItemWidth: 300,
-            listViewBuilderOptions: ListViewBuilderOptions(
-              shrinkWrap: true,
+        Row(
+          children: [
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"GRN Barcode"),
             ),
-            children: searchedGRNs
-                .map((e) => GRNCard(
-                      grn: e,
-                      refresh: refresh,
-                      supplierOtherGRNs: supplierOtherGRNs,
-                      productOtherGRNs: productOtherGRNs,
-                    ))
-                .toList()),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"GRN Date"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Qty"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"WholeSale Price"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Value"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Paid Amount"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Due Amount"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"#"),
+            )
+          ],
+        ),
+        ...searchedGRNs.map((e) => Container(
+          height: 78,
+          margin: EdgeInsets.only(top: 10),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: FluentTheme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(10)
+          ),
+          child:  Column(
+            children: [
+              Row(
+                children: [
+                  Text(e.product.name,textAlign: TextAlign.start,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 20)),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,e.barcode),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,OtherUtils.formatDateTime(e.grnDate)),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.quantity } ${e.product.unit.name}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.wholesalePrice}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.value}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.paidAmount}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: Container(
+                    padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+                    child: Text("${e.douedAmount}", textAlign: TextAlign.center,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(color: e.douedAmount > 0 ? Colors.red:Colors.green)),
+                  )
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: Button(
+                      child: Text("View"),
+                      onPressed: (){
+                        Navigator.of(context).push(FluentDialogRoute(builder: (context) =>Center(
+                          child: SizedBox(
+                            width: 500,
+                            child: GRNCard(
+                              grn: e,
+                              refresh: refresh,
+                              supplierOtherGRNs: supplierOtherGRNs,
+                              productOtherGRNs: productOtherGRNs,
+                            ),
+                          ),
+                        ) , context: context));
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        )),
+        // ResponsiveGridList(
+        //     minItemWidth: 300,
+        //     listViewBuilderOptions: ListViewBuilderOptions(
+        //       shrinkWrap: true,
+        //     ),
+        //     children: searchedGRNs
+        //         .map((e) => GRNCard(
+        //               grn: e,
+        //               refresh: refresh,
+        //               supplierOtherGRNs: supplierOtherGRNs,
+        //               productOtherGRNs: productOtherGRNs,
+        //             ))
+        //         .toList()),
       ],
     );
   }
+}
+
+
+Widget _tableHead(BuildContext context,String text){
+  return Container(
+    padding: EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+    decoration: BoxDecoration(
+        color: FluentTheme.of(context).accentColor.withOpacity(0.2)
+    ),
+    child: Text(text,textAlign: TextAlign.center,style:FluentTheme.of(context).typography.bodyStrong,),
+  );
+}
+
+Widget _tableBodyCell(BuildContext context,String text) {
+  return Container(
+    padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+    child: Text(text, textAlign: TextAlign.center,),
+  );
 }

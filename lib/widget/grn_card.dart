@@ -1,9 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/grn.dart';
 import 'package:point_of_sale/widget/pay_for_grn_widget.dart';
+import 'package:point_of_sale/widget/stock_card.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/product.dart';
+import '../models/stock.dart';
 import '../models/supplier.dart';
 import '../utils/other_utils.dart';
 
@@ -602,53 +604,59 @@ class _GRNCardState extends State<GRNCard> {
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white)),
-                        onPressed: () {})),
+                        onPressed: ()async{
+                          final stock = await Stock.getByGRNID(widget.grn.id);
+                          if(stock == null){
+                            return;
+                          }
+                          Navigator.of(context).push(FluentDialogRoute(builder: (context) => StockCardWidget(stock:stock!), context: context));
+                        })),
               ],
             ),
           ),
-          const SizedBox(
-            height: 5,
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: FilledButton(
-                    child: const Text(
-                      "Product Other GRNs",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    onPressed: () {
-                      widget.productOtherGRNs(widget.grn.product);
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  flex: 1,
-                  child: FilledButton(
-                      child: const Text(
-                        "Supplier Other GRNs",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      onPressed: () {
-                        widget.supplierOtherGRNs(widget.grn.supplier);
-                      }),
-                ),
-              ],
-            ),
-          ),
+          // const SizedBox(
+          //   height: 5,
+          // ),
+          // SizedBox(
+          //   width: double.infinity,
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       Expanded(
+          //         flex: 1,
+          //         child: FilledButton(
+          //           child: const Text(
+          //             "Product Other GRNs",
+          //             style: TextStyle(
+          //               color: Colors.white,
+          //               fontWeight: FontWeight.w700,
+          //             ),
+          //           ),
+          //           onPressed: () {
+          //             widget.productOtherGRNs(widget.grn.product);
+          //           },
+          //         ),
+          //       ),
+          //       const SizedBox(
+          //         width: 10,
+          //       ),
+          //       Expanded(
+          //         flex: 1,
+          //         child: FilledButton(
+          //             child: const Text(
+          //               "Supplier Other GRNs",
+          //               style: TextStyle(
+          //                 color: Colors.white,
+          //                 fontWeight: FontWeight.w700,
+          //               ),
+          //             ),
+          //             onPressed: () {
+          //               widget.supplierOtherGRNs(widget.grn.supplier);
+          //             }),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

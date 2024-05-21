@@ -233,5 +233,30 @@ class Stock{
     }
     return stocks;
   }
+  
+  static Future<Stock?> getByGRNID(int id)async{
+    final conn = MySQLDatabase().pool;
+    final query = "$SELECTQUERY WHERE $COLNAME_GRN = '$id'";
+    print(query);
+    final result = await conn.execute(query);
+    if(result.rows.isEmpty){
+      return null;
+    }
+    var row = result.rows.first;
+    GRN grn =await GRN.getByID(row.colByName(COLNAME_GRN)??"0");
+    Product product = await Product.getByID(row.colByName(COLNAME_PRODUCT)??"0");
+    Stock stock = Stock(
+        id: int.parse(row.colByName(COLNAME_ID)??"0"),
+        barcode: row.colByName(COLNAME_BARCODE) as String,
+        availbleQty: double.parse(row.colByName(COLNAME_AVAILBLE_QTY)?? "0"),
+        defaultDiscount: double.parse(row.colByName(COLNAME_DEFAULT_DISCOUNT)?? "0"),
+        retailPrice: double.parse(row.colByName(COLNAME_RETAIL_PRICE)?? "0"),
+        wholesalePrice: double.parse(row.colByName(COLNAME_WHOLESALE_PRICE)?? "0"),
+        mnf_date: DateTime.parse(row.colByName(COLNAME_MNF_DATE) as String),
+        exp_date:  DateTime.parse(row.colByName(COLNAME_EXP_DATE) as String),
+        product: product,
+        grn: grn);
+    return stock;
+  }
 
 }
