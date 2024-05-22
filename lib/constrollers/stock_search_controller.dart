@@ -1,97 +1,68 @@
+import 'package:point_of_sale/models/grn.dart';
+import 'package:point_of_sale/utils/database.dart';
+
 import '../models/product.dart';
 import '../models/stock.dart';
 
 class StockSearchController{
-  List<Stock> stock = [];
-  StockSearchController({required List<Stock> stock}){
-    this.stock.addAll(stock);
-  }
+  List<String> conditions = [];
   void clear(){
-    stock.clear();
+    conditions.clear();
   }
 
   void searchByProductBarcode(String barcode){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.product.barcode == barcode){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+   conditions.add("${Product.TABLE_NAME}.${Product.COLNAME_BARCODE} = '$barcode'");
   }
+
   void searchByStockBarcode(String barcode){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.barcode == barcode){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+    conditions.add("${Stock.TABLE_NAME}.${Stock.COLNAME_BARCODE} = '$barcode'");
   }
   void searchByPriceLessThan(double price){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.retailPrice < price){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+    conditions.add("${Stock.COLNAME_RETAIL_PRICE} <= '$price'");
   }
   void searchByPriceGraterThan(double price){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.retailPrice > price){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+    conditions.add("${Stock.COLNAME_RETAIL_PRICE} >= '$price'");
   }
   void searchByProduct(Product product){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.product.id == product.id){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+    conditions.add("${Stock.COLNAME_PRODUCT} = '${product.id}'");
   }
   void searchByStockExpired(){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.exp_date.isBefore(DateTime.now())){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+    conditions.add("${Stock.COLNAME_EXP_DATE} < '${DateTime.now().toIso8601String()}'");
   }
   void searchByStockExpiredDateFrom(DateTime expDate){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.exp_date.isAfter(expDate)){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+   conditions.add("${Stock.COLNAME_EXP_DATE} >= '${expDate.toIso8601String()}'");
   }
   void searchByStockExpiredDateTo(DateTime expDate){
-    List<Stock> searchStock = [];
-    for(Stock st in stock){
-      if(st.exp_date.isBefore(expDate)){
-        searchStock.add(st);
-      }
-    }
-    clear();
-    stock.addAll(searchStock);
+    conditions.add("${Stock.COLNAME_EXP_DATE} <= '${expDate.toIso8601String()}'");
   }
-  List<Stock> getStock(){
-    return stock;
+  Future<List<Stock>> getStock()async{
+    List<Stock> stocks = [];
+    if(conditions.isNotEmpty){
+      String q = "SELECT * FROM `stock` INNER JOIN product ON product.product_id = stock.id WHERE ${conditions.join(" AND ")}";
+      print(q);
+      final conn = MySQLDatabase().pool;
+      final result =await conn.execute(q);
+      for(var row in result.rows){
+        GRN grn =await GRN.getByID(row.colByName(Stock.COLNAME_GRN)??"0");
+        Product product = await Product.getByID(row.colByName(Stock.COLNAME_PRODUCT)??"0");
+        Stock stock = Stock(
+            id: int.parse(row.colByName(Stock.COLNAME_ID)??"0"),
+            barcode: row.colByName(Stock.COLNAME_BARCODE) as String,
+            availbleQty: double.parse(row.colByName(Stock.COLNAME_AVAILBLE_QTY)?? "0"),
+            defaultDiscount: double.parse(row.colByName(Stock.COLNAME_DEFAULT_DISCOUNT)?? "0"),
+            retailPrice: double.parse(row.colByName(Stock.COLNAME_RETAIL_PRICE)?? "0"),
+            wholesalePrice: double.parse(row.colByName(Stock.COLNAME_WHOLESALE_PRICE)?? "0"),
+            mnf_date: DateTime.parse(row.colByName(Stock.COLNAME_MNF_DATE) as String),
+            exp_date:  DateTime.parse(row.colByName(Stock.COLNAME_EXP_DATE) as String),
+            product: product,
+            grn: grn);
+        stocks.add(stock);
+      }
+
+    }
+
+
+    return stocks;
   }
 
 }

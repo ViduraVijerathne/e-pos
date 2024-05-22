@@ -46,9 +46,9 @@ class _StockScreenState extends State<StockScreen> {
     return headerSizeBoxHeight;
   }
 
-  void search() {
+  void search()async {
     print(stocks.length);
-    StockSearchController controller = StockSearchController(stock: stocks);
+    StockSearchController controller = StockSearchController();
 
     if(_productBarcodeController.text.isNotEmpty){
       print("searchProductBarcode");
@@ -58,7 +58,7 @@ class _StockScreenState extends State<StockScreen> {
       controller.searchByStockBarcode(_stockBarcodeController.text);
     }
     if(priceLessThan >0){
-      controller.searchByPriceLessThan(priceGraterThan);
+      controller.searchByPriceLessThan(priceLessThan);
     }
     if(priceGraterThan > 0){
       controller.searchByPriceGraterThan(priceGraterThan);
@@ -71,7 +71,7 @@ class _StockScreenState extends State<StockScreen> {
     }
 
     searchStocks.clear();
-    searchStocks.addAll(controller.getStock());
+    searchStocks.addAll(await controller.getStock());
     setState(() {
 
     });
@@ -80,18 +80,42 @@ class _StockScreenState extends State<StockScreen> {
 
   void dateFilter() {}
 
-  void clear() {}
-
-  void loadStocks() async {
-    searchStocks.addAll(await Stock.getAll());
-    stocks.addAll(searchStocks);
+  void clear() {
+    searchStocks.clear();
+    searchStocks.addAll(stocks);
     if (mounted) {
       setState(() {});
     }
   }
 
+  void loadStocks() async {
+    int limit = searchStocks.length+6;
+    searchStocks.clear();
+    stocks.clear();
+    searchStocks.addAll(await Stock.getAllWithLimit(limit: limit));
+    stocks.addAll(searchStocks);
+    print("loading");
+    if (mounted) {
+      print("stock count ${searchStocks.length}" );
+      setState(() {});
+    }
+  }
+
+  final _scrollController = ScrollController();
+
+  void _onScroll() {
+    if (_scrollController.position.atEdge) {
+      bool isBottom = _scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadStocks();
+      }
+    }
+  }
+
   @override
   void initState() {
+    _scrollController.addListener(_onScroll); // Add scroll listener
     loadStocks();
     super.initState();
   }
@@ -99,6 +123,7 @@ class _StockScreenState extends State<StockScreen> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage.scrollable(
+      scrollController: _scrollController,
       header: Align(
         alignment: Alignment.center,
         child: Text(
