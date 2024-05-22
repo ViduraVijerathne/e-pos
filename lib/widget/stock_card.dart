@@ -23,14 +23,14 @@ class _StockCardWidgetState extends State<StockCardWidget> {
   final rightFlex = 150.0;
 
   void viewGRN(){
-    Navigator.of(context).push(FluentDialogRoute(builder: (context) =>GRNCard(grn: widget.stock.grn, refresh: (){}, supplierOtherGRNs: (Supplier supplier){}, productOtherGRNs: (p0){},) , context: context));
+    Navigator.of(context).push(FluentDialogRoute(builder: (context) =>Center(child: SizedBox(width:500,child: GRNCard(grn: widget.stock.grn, refresh: (){}, supplierOtherGRNs: (Supplier supplier){}, productOtherGRNs: (p0){},))) , context: context));
   }
   void viewProduct(){
-    Navigator.of(context).push(FluentDialogRoute(builder: (context) => ProductCard(product: widget.stock.product, refresh: (){}, viewStock: (Product product) {  }, viewProductSales: (Product product) {  },), context: context));
+    Navigator.of(context).push(FluentDialogRoute(builder: (context) => Center(child: SizedBox(width: 500,child: ProductCard(product: widget.stock.product, refresh: (){}, viewStock: (Product product) {  }, viewProductSales: (Product product) {  },))), context: context));
   }
 
   void viewSupplier(){
-    Navigator.of(context).push(FluentDialogRoute(builder: (context) => SupplierCard(supplier: widget.stock.grn.supplier, changeState: (){}), context: context));
+    Navigator.of(context).push(FluentDialogRoute(builder: (context) => Center(child: SizedBox(width:500,child: SupplierCard(supplier: widget.stock.grn.supplier, changeState: (){}))), context: context));
   }
   void updateDefaultDiscount()async{
    await  Navigator.of(context).push(FluentDialogRoute(builder:(context) => UpdateDefaultDiscountStock(stock: widget.stock) , context: context));

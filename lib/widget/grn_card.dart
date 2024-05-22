@@ -609,7 +609,7 @@ class _GRNCardState extends State<GRNCard> {
                           if(stock == null){
                             return;
                           }
-                          Navigator.of(context).push(FluentDialogRoute(builder: (context) => StockCardWidget(stock:stock!), context: context));
+                          Navigator.of(context).push(FluentDialogRoute(builder: (context) => Center(child: SizedBox(width: 500,child: StockCardWidget(stock:stock!))), context: context));
                         })),
               ],
             ),

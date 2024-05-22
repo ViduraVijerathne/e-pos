@@ -3,8 +3,8 @@ import 'package:fluent_ui/fluent_ui.dart';
 import '../models/grn.dart';
 
 class GrnDateFilterWidget extends StatefulWidget {
-  List<GRN> grns;
-  GrnDateFilterWidget({super.key,required this.grns});
+  final List<GRN> grns;
+  const GrnDateFilterWidget({super.key,required this.grns});
 
   @override
   State<GrnDateFilterWidget> createState() => _GrnDateFilterWidgetState();

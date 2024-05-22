@@ -5,6 +5,7 @@ import "package:responsive_grid_list/responsive_grid_list.dart";
 
 import "../models/product.dart";
 import "../models/stock.dart";
+import "../utils/other_utils.dart";
 
 class StockScreen extends StatefulWidget {
   const StockScreen({super.key});
@@ -255,14 +256,148 @@ class _StockScreenState extends State<StockScreen> {
             ),
           ),
         ),
-        ResponsiveGridList(
-          minItemWidth: 300,
-          listViewBuilderOptions: ListViewBuilderOptions(
-            shrinkWrap: true,
-          ),
-          children: searchStocks.map((e) =>  StockCardWidget(stock: e)).toList(),
+        Row(
+          children: [
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Stock Barcode"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Mnf Date"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Exp Date"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Qty"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"WholeSale Price"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Retail Price"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Discount"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"#"),
+            )
+          ],
         ),
+        ...searchStocks.map((e) => Container(
+          height: 78,
+          margin: EdgeInsets.only(top: 10),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              color: FluentTheme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(10)
+          ),
+          child:  Column(
+            children: [
+              Row(
+                children: [
+                  Text(e.product.name,textAlign: TextAlign.start,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 20)),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,e.barcode),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,OtherUtils.getDate(e.mnf_date)),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,OtherUtils.getDate(e.exp_date)),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.availbleQty } ${e.product.unit.name}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.wholesalePrice}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.retailPrice}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.defaultDiscount}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: Button(
+                      child: Text("View"),
+                      onPressed: (){
+                        Navigator.of(context).push(FluentDialogRoute(builder: (context) =>Center(
+                          child: SizedBox(
+                            width: 500,
+                            child:StockCardWidget(stock: e),
+                          ),
+                        ) , context: context));
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ) ),
+        // ResponsiveGridList(
+        //   minItemWidth: 300,
+        //   listViewBuilderOptions: ListViewBuilderOptions(
+        //     shrinkWrap: true,
+        //   ),
+        //   children: searchStocks.map((e) =>  StockCardWidget(stock: e)).toList(),
+        // ),
       ],
     );
   }
+}
+
+
+Widget _tableHead(BuildContext context,String text){
+  return Container(
+    padding: EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+    decoration: BoxDecoration(
+        color: FluentTheme.of(context).accentColor.withOpacity(0.2)
+    ),
+    child: Text(text,textAlign: TextAlign.center,style:FluentTheme.of(context).typography.bodyStrong,),
+  );
+}
+
+Widget _tableBodyCell(BuildContext context,String text) {
+  return Container(
+    padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+    child: Text(text, textAlign: TextAlign.center,),
+  );
 }
