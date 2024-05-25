@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/supplier_search_controller.dart';
 import 'package:point_of_sale/widget/loading_widget.dart';
@@ -5,6 +7,7 @@ import 'package:point_of_sale/widget/supplierCard.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/supplier.dart';
+import '../models/supplierBankAccountDetails.dart';
 class SuppliersScreen extends StatefulWidget {
   const SuppliersScreen({super.key});
 
@@ -90,6 +93,10 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
     setState(() {
 
     });
+  }
+
+  SupplierBankAccountDetails loadSupplierBankAccountDetails(Supplier supplier){
+    return SupplierBankAccountDetails.fromJson(jsonDecode(supplier.bankDetails));
   }
   @override
   Widget build(BuildContext context) {
@@ -179,14 +186,143 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
             ),
           ),
         ),
-        isLoading ? LoadingWidget():ResponsiveGridList(
-          minItemWidth: 300,
-          listViewBuilderOptions: ListViewBuilderOptions(
-            shrinkWrap: true,
-          ),
-          children:searchSupplier.map((e) => SupplierCard(supplier: e,changeState:changeState)).toList()
+        isLoading ? LoadingWidget():SizedBox(),
+        Row(
+          children: [
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"ID"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Contact"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Email"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Address"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Bank Acc Num"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Bank Name"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Bank Branch"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"#"),
+            )
+          ],
         ),
+        ...searchSupplier.map((e) => Container(
+          height: 100,
+          margin: EdgeInsets.only(top: 10),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              color: FluentTheme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(10)
+          ),
+          child:  Column(
+            children: [
+              Row(
+                children: [
+                  Text(e.name,textAlign: TextAlign.start,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 20)),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.id}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,e.contact),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,e.email),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,loadSupplierBankAccountDetails(e).SupplierAddress),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,loadSupplierBankAccountDetails(e).SupplierAccountNumber),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,loadSupplierBankAccountDetails(e).SupplierAccountNumber),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,loadSupplierBankAccountDetails(e).SupplierBankAccountBranch),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: Button(
+                      child: Text("View"),
+                      onPressed: (){
+                        Navigator.of(context).push(FluentDialogRoute(builder: (context) =>Center(
+                          child: SizedBox(
+                            width: 500,
+                            child:SupplierCard(supplier: e,changeState:changeState),
+                          ),
+                        ) , context: context));
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ) ),
+        
       ],
     );
   }
+}
+
+
+Widget _tableHead(BuildContext context,String text){
+  return Container(
+    padding: EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+    decoration: BoxDecoration(
+        color: FluentTheme.of(context).accentColor.withOpacity(0.2)
+    ),
+    child: Text(text,textAlign: TextAlign.center,style:FluentTheme.of(context).typography.bodyStrong,),
+  );
+}
+
+Widget _tableBodyCell(BuildContext context,String text) {
+  return Container(
+    padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+    child: Text(text, textAlign: TextAlign.center,),
+  );
 }
