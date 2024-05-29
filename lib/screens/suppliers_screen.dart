@@ -19,19 +19,31 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   List<Supplier> suppliers = [];
   List<Supplier> searchSupplier = [];
   bool isLoading = false;
+  final ScrollController _scrollController = ScrollController();
+
 
   void loadSupplier()async{
-    setState(() {
-      isLoading = true;
-    });
-    suppliers.addAll(await Supplier.getAll());
+    
+    int limit = suppliers.length+5;
+    suppliers.clear();
+    searchSupplier.clear();
+    suppliers.addAll(await Supplier.getAll(limit: limit));
     searchSupplier.addAll(suppliers);
     setState(() {
-      isLoading = false;
     });
+  }
+  void _onScroll() {
+    if (_scrollController.position.atEdge) {
+      bool isBottom = _scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadSupplier();
+      }
+    }
   }
   @override
   void initState() {
+    _scrollController.addListener(_onScroll);
     if(mounted){
       loadSupplier();
     }
@@ -101,6 +113,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage.scrollable(
+      scrollController: _scrollController,
       header: Align(
         alignment: Alignment.center,
         child: Text(
@@ -186,7 +199,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
             ),
           ),
         ),
-        isLoading ? LoadingWidget():SizedBox(),
+
         Row(
           children: [
             Flexible(
@@ -303,7 +316,6 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
             ],
           ),
         ) ),
-        
       ],
     );
   }

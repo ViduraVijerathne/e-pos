@@ -1,4 +1,5 @@
 import 'package:mysql_client/mysql_client.dart';
+import 'package:point_of_sale/utils/database.dart';
 
 import '../utils/app_data.dart';
 
@@ -21,17 +22,10 @@ class Supplier{
  static const String SELECTQUERY = "SELECT * FROM $TABLE_NAME";
  static const String INSERTQUERY = "INSERT INTO `suppliers` (`name`, `contact`, `email`, `bank_acount_details`) VALUES (?,?,?, ?)";
 static const String UPDATEQUERY = "UPDATE `suppliers` SET `name`=?, `contact`=?, `email`=?, `bank_acount_details`=? WHERE  `supplier_id`=?;";
-  static Future<List<Supplier>> getAll()async {
+  static Future<List<Supplier>> getAll({int limit = 4})async {
     List<Supplier> suppliers = [];
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
-    await conn.connect();
-    var results = await conn.execute(SELECTQUERY);
+    final conn = MySQLDatabase().pool;
+    var results = await conn.execute("$SELECTQUERY LIMIT $limit");
     for (var row in results.rows) {
       int id = int.parse(row.colByName(COLNAME_ID)!);
       String name = row.colByName(COLNAME_NAME)!;
