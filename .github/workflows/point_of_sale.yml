@@ -1,40 +1,25 @@
-name: Point of Sale
+name: Build Windows Release
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    branches: [ main ]  # Trigger on pushes to the main branch
 
 jobs:
   build:
-    runs-on: windows-latest
-
+    runs-on: windows-latest  # Run the job on a Windows virtual machine
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v2  # Checkout your code from GitHub
+      - uses: subosito/flutter-action@v1  # Setup Flutter environment
         with:
-          flutter-version: '3.13.0'  # Make sure this version includes Dart >=3.1.5
-
-      - name: Display Flutter version
-        run: flutter --version
-
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Enable Windows desktop
-        run: flutter config --enable-windows-desktop
-
-      - name: Build Windows application
-        run: flutter build windows --verbose
-
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v3
+          channel: stable  # Use the stable Flutter channel
+      - run: flutter pub get  # Install dependencies
+      - run: flutter build windows --release  # Build the Windows release
+      - uses: thedoctor0/zip-release@v1  # Create a zip archive of the build artifacts
         with:
-          name: windows-build
-          path: build/windows/runner/Release/
+          files: build/windows/artifacts/*  # Specify files to include in the zip
+      - name: Create Release  # Create a release on GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.sha }}  # Use commit SHA as the release tag
+          draft: false  # Set to true for draft releases
+          files: ${{ steps.zip.outputs.zip_file }}  # Upload the zip file as an asset
