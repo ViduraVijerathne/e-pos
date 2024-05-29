@@ -1,4 +1,4 @@
-name: Build Flutter Windows App
+name: Point of Sale
 
 on:
   push:
@@ -19,7 +19,10 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.1.5'
+          flutter-version: '3.7.12'  # Specify the version of Flutter you want to use
+
+      - name: Display Flutter version
+        run: flutter --version
 
       - name: Install dependencies
         run: flutter pub get
@@ -28,7 +31,7 @@ jobs:
         run: flutter config --enable-windows-desktop
 
       - name: Build Windows application
-        run: flutter build windows
+        run: flutter build windows --verbose
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
