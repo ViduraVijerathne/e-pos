@@ -14,7 +14,7 @@ jobs:
           channel: stable  # Use the stable Flutter channel
       - run: flutter pub get  # Install dependencies
       - run: flutter build windows --release  # Build the Windows release
-      - uses: thedoctor0/zip-release@v1  # Create a zip archive of the build artifacts
+      - uses: TheDoctor0/zip-release@0.7.6  # Create a zip archive of the build artifacts TheDoctor0/zip-release@0.7.6
         with:
           files: build/windows/artifacts/*  # Specify files to include in the zip
       - name: Create Release  # Create a release on GitHub
