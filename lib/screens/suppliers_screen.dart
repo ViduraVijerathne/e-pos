@@ -76,9 +76,8 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
-  void search(){
-    print(suppliers.length);
-    SupplierSearchController controller = SupplierSearchController(suppliers: suppliers);
+  void search()async{
+    SupplierSearchController controller = SupplierSearchController();
     if(_nameController.text.isNotEmpty){
       controller.searchByName(_nameController.text);
     }
@@ -89,8 +88,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
       controller.searchByEmail(_emailController.text);
     }
     searchSupplier.clear();
-    searchSupplier.addAll(controller.getAll());
-    print(controller.getAll().length);
+    searchSupplier.addAll(await controller.getAll() );
     setState(() {
 
     });

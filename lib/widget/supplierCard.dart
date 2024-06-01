@@ -39,7 +39,7 @@ class _SupplierCardState extends State<SupplierCard> {
 
   }
   void updateSupplier()async{
-    Supplier? result = await Navigator.of(context).push<Supplier>(FluentDialogRoute(builder: (context) => AddSupplierScreen(supplier: widget.supplier), context: context));
+    Supplier? result = await Navigator.of(context).push<Supplier>(FluentDialogRoute(builder: (context) => Center(child: SizedBox(width:700,child: AddSupplierScreen(supplier: widget.supplier))), context: context));
     if(result != null){
       print("pk");
       widget.supplier.email = result.email;
