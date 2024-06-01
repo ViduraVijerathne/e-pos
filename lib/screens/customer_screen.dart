@@ -120,14 +120,116 @@ class _CustomerScreenState extends State<CustomerScreen> {
             ),
           ),
         ),
-        isLoading ? const LoadingWidget():ResponsiveGridList(
-            minItemWidth: 300,
-            listViewBuilderOptions: ListViewBuilderOptions(
-              shrinkWrap: true,
+        Row(
+          children: [
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"ID"),
             ),
-            children:searchCustomer.map((e) => CustomerCard(customer:e)).toList()
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Contact"),
+            ),
+
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"Address"),
+            ),
+            Flexible(
+              flex: 2,
+              fit: FlexFit.tight,
+              child: _tableHead(context,"#"),
+            )
+          ],
         ),
+
+        isLoading ? const LoadingWidget():const SizedBox(),
+        ...searchCustomer.map((e) => Container(
+          height: 100,
+          margin: EdgeInsets.only(top: 10),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+              color: FluentTheme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(10)
+          ),
+          child:  Column(
+            children: [
+              Row(
+                children: [
+                  Text(e.name,textAlign: TextAlign.start,style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 20)),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,"${e.id}"),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,e.contact),
+                  ),
+
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: _tableBodyCell(context,e.address),
+                  ),
+
+
+                  Flexible(
+                    flex: 2,
+                    fit: FlexFit.tight,
+                    child: Button(
+                      child: Text("View"),
+                      onPressed: (){
+                        Navigator.of(context).push(FluentDialogRoute(builder: (context) =>Center(
+                          child: SizedBox(
+                            width: 500,
+                            child:CustomerCard(customer: e,),
+                          ),
+                        ) , context: context));
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ) ),
+
+        // ResponsiveGridList(
+        //     minItemWidth: 300,
+        //     listViewBuilderOptions: ListViewBuilderOptions(
+        //       shrinkWrap: true,
+        //     ),
+        //     children:searchCustomer.map((e) => CustomerCard(customer:e)).toList()
+        // ),
       ],
     );
   }
+}
+
+
+
+Widget _tableHead(BuildContext context,String text){
+  return Container(
+    padding: EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+    decoration: BoxDecoration(
+        color: FluentTheme.of(context).accentColor.withOpacity(0.2)
+    ),
+    child: Text(text,textAlign: TextAlign.center,style:FluentTheme.of(context).typography.bodyStrong,),
+  );
+}
+
+Widget _tableBodyCell(BuildContext context,String text) {
+  return Container(
+    padding: EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
+    child: Text(text, textAlign: TextAlign.center,),
+  );
 }
