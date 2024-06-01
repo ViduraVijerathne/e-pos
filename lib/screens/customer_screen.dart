@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:point_of_sale/constrollers/customer_search_controller.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/customer.dart';
@@ -19,8 +20,28 @@ class _CustomerScreenState extends State<CustomerScreen> {
   final TextEditingController _contactController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
-  void search(){}
-  void clear(){}
+  void search()async{
+    var controller  = CustomerSearchController();
+    if(_nameController.text.isNotEmpty){
+      controller.searchByName(_nameController.text);
+    }
+    if(_contactController.text.isNotEmpty){
+      controller.searchByContact(_contactController.text);
+    }
+
+    customers.clear();
+    searchCustomer.clear();
+    customers.addAll(await controller.getAll());
+    searchCustomer.addAll(customers);
+    setState(() {
+    });
+  }
+  void clear(){
+    _contactController.text = "";
+    _nameController.text = "";
+    loadCustomers();
+
+  }
 
   void _onScroll() {
     if (_scrollController.position.atEdge) {
