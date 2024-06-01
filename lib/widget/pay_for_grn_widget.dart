@@ -1,5 +1,7 @@
 import 'package:firedart/generated/google/firestore/v1/document.pb.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:point_of_sale/widget/customer_card.dart';
+import 'package:point_of_sale/widget/supplierCard.dart';
 
 import '../models/grn.dart';
 
@@ -54,12 +56,15 @@ class _PayForGRNState extends State<PayForGRN> {
               height: 10,
             ),
             Text(
-              "${widget.grn.supplier.name} : ${widget.grn.product.name} : ${widget.grn.barcode}",
+              "${widget.grn.product.name} : ${widget.grn.barcode}",
               style: FluentTheme.of(context)
                   .typography
                   .title!
                   .copyWith(fontSize: 18),
             ),
+            Button(child: Text(widget.grn.supplier.name), onPressed: () {
+              Navigator.of(context).push(FluentDialogRoute(builder: (context) => Center(child: SizedBox(width:500,child: SupplierCard(supplier: widget.grn.supplier, changeState: () {  },))), context: context));
+            },),
             const SizedBox(
               height: 50,
             ),
