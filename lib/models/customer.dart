@@ -81,20 +81,11 @@ class Customer {
     await conn.close();
   }
 
-  static Future<List<Customer>> getAll({int limit = -1})async{
+  static Future<List<Customer>> getAll({int limit = 5})async{
     List<Customer> customers = [];
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
-    await conn.connect();
-    var s = SELECTQUERY;
-    if(limit > 0){
-      s = SELECTQUERY + " LIMIT $limit";
-    }
+    final conn =MySQLDatabase().pool;
+    var s =   "$SELECTQUERY LIMIT $limit";
+
     var results  = await conn.execute(s);
     for (var row in results.rows) {
       customers.add(Customer(

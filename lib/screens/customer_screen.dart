@@ -17,15 +17,29 @@ class _CustomerScreenState extends State<CustomerScreen> {
   List<Customer> searchCustomer = [];
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contactController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   bool isLoading = false;
   void search(){}
   void clear(){}
 
+  void _onScroll() {
+    if (_scrollController.position.atEdge) {
+      bool isBottom = _scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent;
+      if (isBottom) {
+        loadCustomers();
+      }
+    }
+  }
+
   void loadCustomers()async{
+    int limit = searchCustomer.length+5;
+    customers.clear();
+    searchCustomer.clear();
     setState(() {
-      isLoading  = true;
+      isLoading  = limit == 5 ;
     });
-    customers.addAll(await Customer.getAll());
+    customers.addAll(await Customer.getAll(limit:limit));
     searchCustomer.addAll(customers);
     setState(() {
       isLoading  = false;
@@ -34,6 +48,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
 
   @override
   void initState() {
+    _scrollController.addListener(_onScroll);
     if(mounted){
       loadCustomers();
     }
@@ -42,6 +57,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage.scrollable(
+      scrollController: _scrollController,
       header: Align(
         alignment: Alignment.center,
         child: Text(
