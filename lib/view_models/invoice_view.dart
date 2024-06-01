@@ -20,28 +20,30 @@ class InvoiceViewModel{
   static Future<List<InvoiceViewModel>> getAllLimit({int limit = 20})async{
     List<InvoiceViewModel> invoices = [];
     final pool = MySQLDatabase().pool;
-    var results =await pool.execute("SELECT * FROM invoice LIMIT $limit");
-
-    for (var row in results.rows) {
-      InvoiceViewModel invoice = InvoiceViewModel(
-        int.parse(row.colByName(Invoice.COLNAME_ID) as String),
-        row.colByName(Invoice.COLNAME_BARCODE) as String,
-        await Customer.getByID(row.colByName(Invoice.COLNAME_CUSTOMER) as String),
-        double.parse(row.colByName(Invoice.COLNAME_INVOICE_TOTAL) as String),
-        double.parse(row.colByName(Invoice.COLNAME_DISCOUNT_TOTAL) as String),
-        double.parse(row.colByName(Invoice.COLNAME_GRAND_TOTAL) as String),
-        DateTime.parse(row.colByName(Invoice.COLNAME_INVOICE_DATE) as String),
-        double.parse(row.colByName(Invoice.COLNAME_PAID_AMOUNT) as String),
-        double.parse(row.colByName(Invoice.COLNAME_BALANCE) as String),
-
-      );
-
-      invoices.add(invoice);
-
+    try {
+      var results = await pool.execute("SELECT * FROM invoice LIMIT $limit");
+      for (var row in results.rows) {
+        InvoiceViewModel invoice = InvoiceViewModel(
+          int.parse(row.colByName(Invoice.COLNAME_ID) as String),
+          row.colByName(Invoice.COLNAME_BARCODE) as String,
+          await Customer.getByID(row.colByName(Invoice.COLNAME_CUSTOMER) as String),
+          double.parse(row.colByName(Invoice.COLNAME_INVOICE_TOTAL) as String),
+          double.parse(row.colByName(Invoice.COLNAME_DISCOUNT_TOTAL) as String),
+          double.parse(row.colByName(Invoice.COLNAME_GRAND_TOTAL) as String),
+          DateTime.parse(row.colByName(Invoice.COLNAME_INVOICE_DATE) as String),
+          double.parse(row.colByName(Invoice.COLNAME_PAID_AMOUNT) as String),
+          double.parse(row.colByName(Invoice.COLNAME_BALANCE) as String),
+        );
+        invoices.add(invoice);
+      }
+    } catch (e) {
+      // Log error
+      print("Error fetching invoices: $e");
+      throw Exception("Failed to fetch invoices");
     }
-
 
     return invoices;
     
   }
+
 }

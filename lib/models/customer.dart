@@ -109,7 +109,6 @@ class Customer {
       name: result.rows.first.colByName(COLNAME_NAME) as String,
       address: result.rows.first.colByName(COLNAME_ADDRESS)as String,
     );
-    conn.close();
     return customer;
 
   }
