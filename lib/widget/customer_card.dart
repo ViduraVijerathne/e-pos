@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/customer.dart';
 import 'package:point_of_sale/screens/add_customer.dart';
+import 'package:point_of_sale/screens/invoices_screen.dart';
 
 class CustomerCard extends StatefulWidget {
   final Customer customer;
@@ -15,7 +16,7 @@ class _CustomerCardState extends State<CustomerCard> {
   final rightFlex = 150.0;
 
   void viewInvoices(){
-
+    Navigator.of(context).push(FluentDialogRoute(builder: (context) => InvoiceScreen(customer: widget.customer), context: context));
   }
   void updateCustomer()async{
     var result  = await Navigator.of(context).push<Customer>(FluentDialogRoute(builder: (context) => AddCustomerScreen(customer: widget.customer), context: context));

@@ -100,7 +100,7 @@ class _InvoiceViewCardState extends State<InvoiceViewCard> {
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text("Discounts : ${widget.invoice.invoiceTotal}",style: FluentTheme.of(context).typography.bodyStrong,),
+                    child: Text("Grand Total : ${widget.invoice.invoiceTotal}",style: FluentTheme.of(context).typography.bodyStrong,),
                   ),
                 ],
               ),

@@ -11,7 +11,8 @@ import 'package:responsive_grid_list/responsive_grid_list.dart';
 import '../models/product.dart';
 import '../models/stock.dart';
 class InvoiceScreen extends StatefulWidget {
-  const InvoiceScreen({super.key});
+  final Customer? customer;
+  const InvoiceScreen({super.key, this.customer});
 
   @override
   State<InvoiceScreen> createState() => _InvoiceScreenState();
@@ -88,7 +89,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   void initState() {
     _scrollController.addListener(_onScroll); // Add scroll listener
     if(mounted){
-      loadInvoices();
+      if(widget.customer != null){
+        _selectedCustomer = widget.customer!;
+        _customerController.text = widget.customer!.name;
+        search();
+      }else{
+        loadInvoices();
+      }
+
 
     }
 
@@ -187,6 +195,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                   label: "Customer",
                   child: AutoSuggestBox<Customer>(
                     controller: _customerController,
+                    enabled: widget.customer != null ? false : true,
                     items:customers.map((e) => AutoSuggestBoxItem<Customer>(value: e, label: "${e.name} : ${e.contact}")).toList(),
                     onChanged: (text, reason) {
                       if(reason == TextChangedReason.userInput){
