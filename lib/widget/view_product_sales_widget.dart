@@ -2,7 +2,9 @@ import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:point_of_sale/models/product.dart';
+import 'package:point_of_sale/models/sales_profit_data_object.dart';
 import 'package:point_of_sale/utils/database.dart';
+import 'package:point_of_sale/utils/printer.dart';
 import 'package:point_of_sale/widget/loading_widget.dart';
 import 'package:point_of_sale/widget/my_line_chart_widget.dart';
 
@@ -18,6 +20,7 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
   InsightModes selectedMode = InsightModes.sales;
   bool isLoading = true;
   List<double> chartData = [];
+  List<SalesProfitSataObject> printChartData = [];
   List<ViewProductSaleChartDataModel>  data = [];
   int gridLineLabelPrecision = 3;
 
@@ -36,6 +39,48 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
   DateTime miniumValueDate = DateTime.now();
   double minValue = 0;
   double totalOfValue = 0;
+
+  void withDateRange()async{
+    setState(() {
+      isLoading = true;
+    });
+    final conn =  MySQLDatabase().pool;
+    String query = "SELECT (invoice_has_stock.invoice_unit_price - invoice_has_stock.discount) * SUM(invoice_has_stock.invoice_qty) AS sales, SUM(invoice_has_stock.invoice_qty) AS qty, DATE(invoice.invoice_date) AS sale_date FROM invoice_has_stock INNER JOIN stock ON stock.id = invoice_has_stock.stock_id INNER JOIN invoice ON invoice_has_stock.invoice_invoice_id = invoice.invoice_id WHERE invoice_has_stock.stock_product_product_id = ${widget.product.id} AND DATE(invoice.invoice_date) BETWEEN '${DateFormat('yyyy-MM-dd').format(minDate)}' AND   '${DateFormat('yyyy-MM-dd').format(maxDate)}'  GROUP BY DATE(invoice.invoice_date) ORDER BY sale_date ASC;";
+    if(selectedMode == InsightModes.sales){
+      query = "SELECT SUM(invoice_has_stock.invoice_qty) AS sales ,DATE(invoice.invoice_date) AS sale_date FROM invoice_has_stock INNER JOIN stock ON stock.id = invoice_has_stock.stock_id INNER JOIN invoice ON invoice_has_stock.invoice_invoice_id = invoice.invoice_id WHERE invoice_has_stock.stock_product_product_id = ${widget.product.id} AND DATE(invoice.invoice_date) BETWEEN '${DateFormat('yyyy-MM-dd').format(minDate)}' AND   '${DateFormat('yyyy-MM-dd').format(maxDate)}'  GROUP BY DATE(invoice.invoice_date) ORDER BY sale_date ASC;";
+    }
+    print(query);
+    final result = await conn.execute(query);
+    int i = 0;
+    data.clear();
+    printChartData.clear();
+    for(var row in result.rows){
+      chartData.add(double.parse(row.colByName("sales")!));
+      data.add(
+          ViewProductSaleChartDataModel(value: double.parse(row.colByName("sales")!), date: DateTime.parse(row.colByName("sale_date")!)
+          ));
+      SalesProfitSataObject dataMap = SalesProfitSataObject(date:  DateTime.parse(row.colByName("sale_date")!), value: double.parse(row.colByName("sales")!));
+      printChartData.add(dataMap);
+
+      if(double.parse(row.colByName("sales")!) > maxValue || i ==0){
+        maxValue = double.parse(row.colByName("sales")!);
+        maxiumValueDate = DateTime.parse(row.colByName("sale_date")!);
+      }
+
+      if(double.parse(row.colByName("sales")!) < minValue || i ==0){
+        minValue = double.parse(row.colByName("sales")!);
+        miniumValueDate = DateTime.parse(row.colByName("sale_date")!);
+      }
+
+      totalOfValue = totalOfValue + double.parse(row.colByName("sales")!);
+
+      i +=1;
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   void loadData()async{
     setState(() {
       isLoading = true;
@@ -47,12 +92,14 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
     }
     final result = await conn.execute(query);
     int i = 0;
+    printChartData.clear();
     for(var row in result.rows){
       chartData.add(double.parse(row.colByName("sales")!));
       data.add(
           ViewProductSaleChartDataModel(value: double.parse(row.colByName("sales")!), date: DateTime.parse(row.colByName("sale_date")!)
           ));
-
+      SalesProfitSataObject dataMap = SalesProfitSataObject(date:  DateTime.parse(row.colByName("sale_date")!), value: double.parse(row.colByName("sales")!));
+      printChartData.add(dataMap);
       if(DateTime.parse(row.colByName("sale_date")!).isAfter(maxDate)||i == 0){
         maxDate = DateTime.parse(row.colByName("sale_date")!);
       }
@@ -110,22 +157,70 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
                     child: Center(
                       child: SizedBox(
                         width: 100,
-                        child: ComboBox<InsightModes>(
-                          value: selectedMode,
-                          onChanged: (value) {
-                            if(value !=null){
-                              selectInsightMode(value);
+                        child: InfoLabel(
+                          label: "Mode",
+                          child: ComboBox<InsightModes>(
+                            value: selectedMode,
+                            onChanged: (value) {
+                              if(value !=null){
+                                selectInsightMode(value);
 
-                            }
-                          },
-                          items: InsightModes.values
-                              .map((e) =>
-                              ComboBoxItem<InsightModes>(value: e,child: Text(e.name.toUpperCase()),))
-                              .toList(),
+                              }
+                            },
+                            items: InsightModes.values
+                                .map((e) =>
+                                ComboBoxItem<InsightModes>(value: e,child: Text(e.name.toUpperCase()),))
+                                .toList(),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        width: 200,
+                        child: InfoLabel(
+                          label: "From Date",
+                          child: DatePicker(
+                            // startDate: minDate,
+                            selected: minDate,
+                            onChanged: (value) {
+                              minDate = value;
+                              withDateRange();
+
+                              setState(() {
+
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 10),
+                        width: 200,
+                        child: InfoLabel(
+                          label: "To Date",
+                          child: DatePicker(
+                            // endDate: maxDate,
+                            selected: maxDate,
+                            onChanged: (value) {
+                              maxDate = value;
+                              withDateRange();
+                              setState(() {
+
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
 
                 ],
               ),
@@ -254,7 +349,7 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
                               child: const Icon(FluentIcons.product, size: 20, color: Colors.white,)),
                         ),
                         subtitle: isLoading? ProgressBar(): Text("${maxValue} ${selectedMode == InsightModes.sales?  widget.product.unit.name:'LKR'}",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 19),),
-                        trailing: Text("FROM ${DateFormat('yyyy-MM-dd').format(maxiumValueDate)} "),
+                        trailing: Text("FROM ${DateFormat('yyyy-MM-dd').format(maxDate)} "),
                       ),
                     ),
 
@@ -285,7 +380,7 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
                               child: const Icon(FluentIcons.product, size: 20, color: Colors.white,)),
                         ),
                         subtitle: isLoading? ProgressBar(): Text("${minValue} ${selectedMode == InsightModes.sales?  widget.product.unit.name:'LKR'} ",style: FluentTheme.of(context).typography.bodyStrong!.copyWith(fontSize: 19),),
-                        trailing: Text("FROM ${DateFormat('yyyy-MM-dd').format(miniumValueDate)} "),
+                        trailing: Text("FROM ${DateFormat('yyyy-MM-dd').format(minDate)} "),
                       ),
                     ),
 
@@ -293,7 +388,10 @@ class _ViewProductSalesWidgetState extends State<ViewProductSalesWidget> {
                   const SizedBox(width: 4,),
                   Expanded(
                     flex: 1,
-                      child: Button(child: Text("Print"),onPressed: (){},)
+                      child: Button(child: Text("Print"),onPressed: (){
+                        Printer.printProductSalesProfitReport(product: widget.product, mode: selectedMode, data: printChartData, maxDate: maxDate, maxValue: maxValue, minDate: minDate, minValue: minValue,total: totalOfValue);
+
+                      },)
                   )
                 ],
               ),
