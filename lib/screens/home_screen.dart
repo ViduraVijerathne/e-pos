@@ -12,6 +12,7 @@ import 'package:point_of_sale/screens/grn_screen.dart';
 import 'package:point_of_sale/screens/invoices_screen.dart';
 import 'package:point_of_sale/screens/product_screen.dart';
 import 'package:point_of_sale/screens/sell_product_screen.dart';
+import 'package:point_of_sale/screens/settings_screen.dart';
 import 'package:point_of_sale/screens/stock_screen.dart';
 import 'package:point_of_sale/screens/suppliers_screen.dart';
 import 'package:point_of_sale/utils/app_data.dart';
@@ -145,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
           customPaneItem(
               icon: WindowsIcons.FluentIcons.settings_24_filled ,
               title: "Settings",
-              body: Center(child: Text("Home Screen"),)
+              body: SettingsScreen()
           ),
           PaneItemAction(
             icon: Icon(WindowsIcons.FluentIcons.sign_out_24_filled, size: 24,),

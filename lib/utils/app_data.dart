@@ -2,6 +2,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppData{
   String appName = "E-POS";
+  String companyName = "Andromeda Software Solutions";
+  String appVersion = "1.0.0 MainLine Offline Edition";
+  
  static String firebaseApiKey=  "AIzaSyAeGloicMEC-9v3GP2BapRadtKsSy4J-L8";
   static String firebaseAuthDomain= "point-of-sales-66f61.firebaseapp.com";
   static String firebaseProjectId= "point-of-sales-66f61";

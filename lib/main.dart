@@ -3,6 +3,8 @@ import 'package:firedart/auth/firebase_auth.dart';
 import 'package:firedart/auth/token_store.dart';
 import 'package:firedart/firestore/firestore.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:point_of_sale/dev/dev_home_screen.dart';
+import 'package:point_of_sale/dev/dev_login_screen.dart';
 import 'package:point_of_sale/providers/theme_provider.dart';
 import 'package:point_of_sale/screens/activation_screen.dart';
 import 'package:point_of_sale/screens/admin_activator.dart';
@@ -46,7 +48,8 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: Provider.of<ThemeProvider>(context).themeMode,
 
-      home: MainWrapper(),
+      // home: MainWrapper(),
+      home:DevLoginScreen(),
       // home: AdminActivatorScreen(),
     );
   }

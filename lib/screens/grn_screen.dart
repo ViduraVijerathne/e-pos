@@ -106,6 +106,7 @@ class _GRNScreenState extends State<GRNScreen> {
   void loadGRNs() async {
    if(widget.viewingGRNs != null){
     grns = widget.viewingGRNs!;
+    searchedGRNs.addAll(grns);
    }else{
      final grnList = await GRN.getAllWithLimit(limit: grns.length + 5);
      for(var grn in grnList){
@@ -176,6 +177,10 @@ class _GRNScreenState extends State<GRNScreen> {
   @override
   void initState() {
     _scrollController.addListener(_onScroll); // Add scroll listener
+    if(widget.viewingGRNs !=null && widget.viewingGRNs!.isNotEmpty){
+      _supplierController.text = widget.viewingGRNs![0].supplier.name;
+      selectedSupplier = widget.viewingGRNs![0].supplier;
+    }
     loadGRNs();
     loadSuppliers();
     loadProducts();
@@ -343,6 +348,7 @@ class _GRNScreenState extends State<GRNScreen> {
                     height: 32,
                     child: AutoSuggestBox<Supplier>(
                       controller: _supplierController,
+                      enabled: widget.viewingGRNs == null,
                       onChanged: (text, reason) {
                         if(text.isEmpty){
                           selectedSupplier = null;
