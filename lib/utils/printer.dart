@@ -11,61 +11,69 @@ import '../models/invoice.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
-
+import 'package:printing/printing.dart';
 class Printer {
-  double maxWidth = 80;
+  double maxWidth = 47;
 
   Future<pw.Document> generateInvoice(Invoice invoice) async {
     // Load the TTF font
-    Font font = pw.Font.ttf(await rootBundle.load("assets/fonts/OpenSans.ttf"));
+    Font shopNameFont = pw.Font.ttf(await rootBundle.load("assets/fonts/SegoeUIBoldItalic.ttf"));
+    // final font = await fontFromAssetBundle('assets/fonts/NotoSansSinhala-Bold.ttf');
+    const font = null;
     var myStyle = TextStyle(font: font, fontSize: 11);
     var titleStyle =
-        TextStyle(font: font, fontSize: 15, fontWeight: FontWeight.bold);
+        TextStyle(font: font, fontSize: 10, fontWeight: FontWeight.bold);
     var shopAddressStyle =
-        TextStyle(font: font, fontSize: 11, fontWeight: FontWeight.bold);
+        TextStyle(font: font, fontSize: 7, fontWeight: FontWeight.bold);
     var shopNameStyle =
-        TextStyle(font: font, fontSize: 15, fontWeight: FontWeight.bold);
+        TextStyle(font: shopNameFont, fontSize: 15, fontWeight: FontWeight.bold);
     var invoiceDataStyle =
-        TextStyle(font: font, fontSize: 11, fontWeight: FontWeight.bold);
+        TextStyle(font: font, fontSize: 7, fontWeight: FontWeight.bold);
     var tableTitleStyle =
-        TextStyle(font: font, fontSize: 9, fontWeight: FontWeight.bold);
+        TextStyle(font: font, fontSize: 7, fontWeight: FontWeight.bold);
     var tableDataStyle =
-        TextStyle(font: font, fontSize: 9, fontWeight: FontWeight.bold);
+        TextStyle(font: font, fontSize: 7, fontWeight: FontWeight.bold);
+    var invoiceGrandTotalStyle =TextStyle(font: font, fontSize: 9, fontWeight: FontWeight.bold);
     final pdf = pw.Document(); // Create a new PDF document
 
     // Create the invoice page
     pdf.addPage(pw.Page(
       pageFormat: PdfPageFormat((maxWidth * PdfPageFormat.mm), double.infinity),
-      margin: pw.EdgeInsets.all(5),
+      margin: pw.EdgeInsets.only(left: 1,right: 1,top: 5,bottom: 20),
       build: (context) {
         return pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            pw.Center(child: pw.Text("INVOICE", style: titleStyle)),
+            pw.Container(
+              height: 10,
+              child: Text("-"),
+            ),
+            // pw.Center(child: pw.Text("INVOICE", style: titleStyle)),
             pw.SizedBox(height: 10),
             pw.Center(
                 child: pw.Flexible(
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.center,
                 children: [
-                  pw.Text("Sithara Super",
+                  pw.Text(AppData.shopName,
                       style: shopNameStyle, textAlign: TextAlign.center),
-                  pw.SizedBox(height: 10),
-                  pw.Text("No.56 Colombo Road, Kurunegala",
+                  pw.SizedBox(height: 3),
+                  pw.Text(AppData.shopAddress,
                       style: shopAddressStyle, textAlign: TextAlign.center),
-                  pw.SizedBox(height: 5),
-                  pw.Text("+94562563252 / +94562563253",
+                  pw.SizedBox(height: 1),
+                  pw.Text("${AppData.shopContact1} / ${AppData.shopContact2}",
                       style: shopAddressStyle),
                 ],
               ),
             )),
-            pw.SizedBox(height: 10),
+            pw.Divider(height: 1,),
+            pw.SizedBox(height: 2),
             pw.Text("Invoice No: ${invoice.id}", style: invoiceDataStyle),
-            pw.Text("Date: ${invoice.invoiceDate}", style: invoiceDataStyle),
-            pw.Text("Customer Name: ${invoice.customer.name}",
+            pw.Text("Date: ${convertDateTime(invoice.invoiceDate)}", style: invoiceDataStyle),
+            pw.Text("Customer: ${invoice.customer.name}",
                 style: invoiceDataStyle),
-            pw.Text("Cashier Name: ", style: invoiceDataStyle),
-            pw.SizedBox(height: 10),
+            pw.Text("Cashier :${AppData.userName}", style: invoiceDataStyle),
+            pw.SizedBox(height: 2),
             pw.Container(
               padding: EdgeInsets.all(2),
               margin: EdgeInsets.all(1),
@@ -76,27 +84,27 @@ class Printer {
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
                   pw.Flexible(
-                    child: pw.Text("QTY",
+                    child: pw.Text("Qty",
                         style: tableTitleStyle, textAlign: TextAlign.center),
                     flex: 1,
                   ),
                   pw.Flexible(
-                    child: pw.Text("PRICE",
+                    child: pw.Text("Price",
                         style: tableTitleStyle, textAlign: TextAlign.center),
                     flex: 1,
                   ),
                   pw.Flexible(
-                    child: pw.Text("DISCOUNT",
+                    child: pw.Text("Dis",
                         style: tableTitleStyle, textAlign: TextAlign.center),
                     flex: 1,
                   ),
                   pw.Flexible(
-                    child: pw.Text("VALUE",
+                    child: pw.Text("Val",
                         style: tableTitleStyle, textAlign: TextAlign.center),
                     flex: 1,
                   ),
                   pw.Flexible(
-                    child: pw.Text("AMOUNT",
+                    child: pw.Text("Total",
                         style: tableTitleStyle, textAlign: TextAlign.center),
                     flex: 1,
                   ),
@@ -152,40 +160,66 @@ class Printer {
                         ),
                       ],
                     ),
-                    pw.SizedBox(height: 10),
+                    pw.SizedBox(height: 1),
                   ]));
             }).toList(),
-            pw.SizedBox(height: 10),
-            pw.Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            pw.SizedBox(height: 2),
+            pw.Divider(height: 1, thickness: 1, color: PdfColors.black,borderStyle: BorderStyle.dashed),
+            pw.SizedBox(height: 5),
+            pw.Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               pw.Text("No. of Items:", style: invoiceDataStyle),
               pw.Text("  ${invoice.items.length}", style: invoiceDataStyle),
             ]),
-            pw.Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            pw.Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               pw.Text("Total:", style: invoiceDataStyle),
-              pw.Text("  ${invoice.invoiceTotal}", style: invoiceDataStyle),
+              pw.Text("  ${invoice.grandTotal}", style: invoiceDataStyle),
             ]),
-            pw.Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            pw.Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               pw.Text("Discounts:", style: invoiceDataStyle),
               pw.Text("  ${invoice.discountTotal}", style: invoiceDataStyle),
             ]),
             SizedBox(height: 5),
-            pw.Divider(height: 1, thickness: 1, color: PdfColors.black),
-            pw.Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              pw.Text("Grand Total:", style: invoiceDataStyle),
-              pw.Text("  ${invoice.grandTotal}", style: invoiceDataStyle),
-            ]),
-            pw.Divider(height: 1, thickness: 1, color: PdfColors.black),
+            pw.Divider(height: 1, thickness: 1, color: PdfColors.black,borderStyle: BorderStyle.dashed),
             SizedBox(height: 5),
-            pw.Divider(height: 1, thickness: 1, color: PdfColors.black),
-            SizedBox(height: 10),
-            pw.Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-              pw.Text("Cash Paid:", style: invoiceDataStyle),
-              pw.Text("  ${invoice.paidAmount}", style: invoiceDataStyle),
+            pw.Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              pw.Text("Grand Total:", style: invoiceGrandTotalStyle),
+              pw.Text("  ${invoice.invoiceTotal}", style: invoiceGrandTotalStyle),
             ]),
-            pw.Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            SizedBox(height: 5),
+
+            pw.Divider(height: 1, thickness: 1, color: PdfColors.black,borderStyle: BorderStyle.dashed),
+            // SizedBox(height: 5),
+            // pw.Divider(height: 1, thickness: 1, color: PdfColors.black),
+            SizedBox(height: 10),
+            pw.Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              pw.Text(invoice.paidAmount > 0 ? "Cash Paid:" : "CARD PAYMENT", style: invoiceDataStyle),
+              pw.Text("  ${invoice.paidAmount >  0 ? invoice.paidAmount : ""}", style: invoiceDataStyle),
+            ]),
+            invoice.paidAmount > 0 ? pw.Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               pw.Text("Balance:", style: invoiceDataStyle),
               pw.Text("  ${invoice.balance}", style: invoiceDataStyle),
-            ]),
+            ]) :SizedBox(),
+            pw.SizedBox(height: 10),
+            pw.Divider(height: 1, thickness: 1, color: PdfColors.black,borderStyle: BorderStyle.dashed),
+            pw.SizedBox(height: 5),
+            pw.Align(
+              alignment: Alignment.center,
+              child:  pw.Text("Thank You Come Again ", style: tableDataStyle),
+            ),
+            pw.SizedBox(height: 5),
+            pw.Divider(height: 1, thickness: 1, color: PdfColors.black,borderStyle: BorderStyle.dashed),
+            SizedBox(height: 10),
+            pw.Align(
+              alignment: Alignment.center,
+              child:  pw.Text("Software by Andromeda ", style: tableDataStyle),
+            ),
+            pw.Align(
+              alignment: Alignment.center,
+              child:  pw.Text("+94 75 264 0269 / +94 75 907 9213", style: tableDataStyle),
+            ),
+            pw.SizedBox(height: 50),
+            pw.Divider(height: 1, thickness: 1, color: PdfColors.black),
+
           ],
         );
       },
@@ -247,10 +281,15 @@ class Printer {
   }
 
   static Future<void> printInvoice(Invoice invoice) async {
-    final pdf = await Printer().generateInvoice(invoice);
-    await Printer().getOrCreateInvoiceDirectory();
-    String fileName = "invoice_${invoice.id}.pdf";
-    final file = await Printer().savePdfAndPrint(pdf, fileName);
+    final doc = await Printer().generateInvoice(invoice);
+    await Printing.layoutPdf(
+
+        onLayout: (PdfPageFormat format) async => doc.save());
+
+    print("printed");
+    // await Printer().getOrCreateInvoiceDirectory();
+    // String fileName = "invoice_${invoice.id}.pdf";
+    // // final file = await Printer().savePdfAndPrint(pdf, fileName);
     // await Printing.layoutPdf(
     //   onLayout: (PdfPageFormat format) async => pdf.save(),
     // );
