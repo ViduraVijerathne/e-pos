@@ -77,6 +77,18 @@ class _InvoiceViewCardState extends State<InvoiceViewCard> {
                               style: FluentTheme.of(context).typography.subtitle,
                               textAlign: TextAlign.center),
                         )),
+                    SizedBox(height: 5,),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: FilledButton(
+                          onPressed: (){
+                            Navigator.of(context).push(FluentDialogRoute(builder: (context) => Center(child: SizedBox(height: 500,width: 500,child: CustomerCard(customer:widget.invoice.customer))), context: context));
+                          },
+                          child: Text(
+                              "Re-Print Invoice",
+
+                              textAlign: TextAlign.center),
+                        )),
                     
                   ],
                 ),

@@ -281,12 +281,27 @@ class Printer {
   }
 
   static Future<void> printInvoice(Invoice invoice) async {
+    // final doc = await Printer().generateInvoice(invoice);
+    // await Printing.layoutPdf(
+    //     onLayout: (PdfPageFormat format) async => doc.save());
+
     final doc = await Printer().generateInvoice(invoice);
-    await Printing.layoutPdf(
+    final bytes = await doc.save();
 
-        onLayout: (PdfPageFormat format) async => doc.save());
+    // Get the default printer
+    final printers = await Printing.listPrinters();
+    if (printers.isNotEmpty) {
+      // Select the first available printer
+      final printer = printers.first;
 
-    print("printed");
+      await Printing.directPrintPdf(
+        onLayout: (PdfPageFormat format) async => bytes,
+        printer: printer,
+      );
+    } else {
+      print('No printers available');
+    }
+
     // await Printer().getOrCreateInvoiceDirectory();
     // String fileName = "invoice_${invoice.id}.pdf";
     // // final file = await Printer().savePdfAndPrint(pdf, fileName);
