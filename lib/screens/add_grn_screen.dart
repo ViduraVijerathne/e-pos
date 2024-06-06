@@ -9,8 +9,8 @@ import '../utils/barcodeGenerator.dart';
 
 class AddGRNScreen extends StatefulWidget {
   final GRN? grn;
-  const AddGRNScreen({super.key, this.grn});
 
+  const AddGRNScreen({super.key, this.grn});
 
   @override
   State<AddGRNScreen> createState() => _AddGRNScreenState();
@@ -24,19 +24,18 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
   final TextEditingController _barcodeController = TextEditingController();
   final TextEditingController _productController = TextEditingController();
   final TextEditingController _supplierController = TextEditingController();
- 
-  final TextEditingController _valueController =TextEditingController();
+
+  final TextEditingController _valueController = TextEditingController();
   final TextEditingController _douedController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
   double _quantityController = 0;
-  double  _wholesaleController = 0;
+  double _wholesaleController = 0;
   double _retailController = 0;
   double _paidController = 0;
   double _doeAmount = 0;
   double _grnValue = 0;
   double _defaultDiscount = 0;
-
 
   DateTime mnfDate = DateTime.now();
   DateTime expDate = DateTime.now();
@@ -90,6 +89,7 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
       return 2;
     }
   }
+
   void showMessageBox(
       String title, String body, InfoBarSeverity severity) async {
     await displayInfoBar(context, builder: (context, close) {
@@ -104,72 +104,91 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
       );
     });
   }
-  
-  Future<bool> isValidGRN()async{
-    if(_barcodeController.text.isEmpty){
+
+  Future<bool> isValidGRN() async {
+    if (_barcodeController.text.isEmpty) {
       int result = await showContentBarcodeDialog(context);
-      if(result != 1){
-        showMessageBox("Error", "Please Add GRN Barcode",InfoBarSeverity.error);
+      if (result != 1) {
+        showMessageBox(
+            "Error", "Please Add GRN Barcode", InfoBarSeverity.error);
         return false;
       }
     }
-    if(selectedProduct == null){
-      showMessageBox("Error", "Please Select Product",InfoBarSeverity.error);
+    if (selectedProduct == null) {
+      showMessageBox("Error", "Please Select Product", InfoBarSeverity.error);
       return false;
     }
-    if(selectedSupplier == null){
-      showMessageBox("Error", "Please Select Supplier",InfoBarSeverity.error);
-      return false;
-    }
-
-    if(_quantityController == 0){
-      showMessageBox("Error", "Please Enter Quantity",InfoBarSeverity.error);
+    if (selectedSupplier == null) {
+      showMessageBox("Error", "Please Select Supplier", InfoBarSeverity.error);
       return false;
     }
 
-    if(_wholesaleController == 0){
-      showMessageBox("Error", "Please Enter Wholesale Price",InfoBarSeverity.error);
+    if (_quantityController == 0) {
+      showMessageBox("Error", "Please Enter Quantity", InfoBarSeverity.error);
       return false;
     }
 
-    if(_retailController == 0){
-      showMessageBox("Error", "Please Enter Retail Price",InfoBarSeverity.error);
+    if (_wholesaleController == 0) {
+      showMessageBox(
+          "Error", "Please Enter Wholesale Price", InfoBarSeverity.error);
+      return false;
+    }
+
+    if (_retailController == 0) {
+      showMessageBox(
+          "Error", "Please Enter Retail Price", InfoBarSeverity.error);
       return false;
     }
 
     return true;
   }
 
-  void calculateGRN(){
+  void calculateGRN() {
     _grnValue = _wholesaleController * _quantityController;
     _doeAmount = _grnValue - _paidController;
     _valueController.text = _grnValue.toString();
     _douedController.text = _doeAmount.toString();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
-  Future<void> addStock(GRN grn)async{
+  void clear() {
+    _idController.clear();
+    _barcodeController.clear();
+    _productController.clear();
+    _supplierController.clear();
+    _valueController.clear();
+    _douedController.clear();
+    _descriptionController.clear();
+    _quantityController = 0;
+    _wholesaleController = 0;
+    _retailController = 0;
+    _paidController = 0;
+    _doeAmount = 0;
+    _grnValue = 0;
+    selectedSupplier = null;
+    selectedProduct = null;
+    setState(() {});
+  }
+
+  Future<void> addStock(GRN grn) async {
     Stock stock = Stock(
         id: 0,
         barcode: await BarcodeGenerator.generateRandomStockBarcode(),
         availbleQty: grn.quantity,
         retailPrice: grn.retailPrice,
-        wholesalePrice:grn.wholesalePrice,
+        wholesalePrice: grn.wholesalePrice,
         mnf_date: grn.mnfDate,
         exp_date: grn.expDate,
         product: grn.product,
         grn: grn,
-      defaultDiscount: _defaultDiscount
-    );
+        defaultDiscount: _defaultDiscount);
 
     await stock.insert();
-
+    clear();
   }
-  
-  void addGRN()async{
-    if(await isValidGRN()){
+
+  void addGRN() async {
+    if (await isValidGRN()) {
       calculateGRN();
       GRN grn = GRN(
         id: 0,
@@ -185,21 +204,22 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
         value: _grnValue,
         grnDate: DateTime.now(),
         mnfDate: mnfDate,
-        expDate: expDate,);
-      try{
+        expDate: expDate,
+      );
+      try {
         int grnID = await grn.insert();
         grn.id = grnID;
         await addStock(grn);
-        showMessageBox("Success", "GRN Added Successfully",InfoBarSeverity.success);
-      }catch(ex){
-        showMessageBox("Opps!", "Something went wrong! \n ${ex.toString() } ", InfoBarSeverity.error);
+        showMessageBox(
+            "Success", "GRN Added Successfully", InfoBarSeverity.success);
+      } catch (ex) {
+        showMessageBox("Opps!", "Something went wrong! \n ${ex.toString()} ",
+            InfoBarSeverity.error);
       }
-
-
+    }
   }
-  }
-  
-  void updateGRN(){}
+
+  void updateGRN() {}
 
   @override
   void initState() {
@@ -207,12 +227,6 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
     loadSuppliers();
     super.initState();
   }
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -225,10 +239,10 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
             widget.grn == null
                 ? SizedBox()
                 : IconButton(
-                icon: Icon(FluentIcons.back),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
+                    icon: Icon(FluentIcons.back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
             Text(
               widget.grn == null ? "Add New GRN" : "Update GRN",
               style: FluentTheme.of(context).typography.title,
@@ -250,9 +264,9 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
           InfoLabel(
             label: "Barcode",
             child: TextBox(
+              enabled: false,
               controller: _barcodeController,
               placeholder: "Barcode",
-
             ),
           ),
           InfoLabel(
@@ -264,10 +278,12 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
                 onSelected: (value) {
                   selectedProduct = value.value;
                 },
-                items: products.map((e) => AutoSuggestBoxItem<Product>(
-                  value: e,
-                  label: "${e.barcode} : ${e.name}",
-                )).toList(),
+                items: products
+                    .map((e) => AutoSuggestBoxItem<Product>(
+                          value: e,
+                          label: "${e.barcode} : ${e.name}",
+                        ))
+                    .toList(),
               ),
             ),
           ),
@@ -280,26 +296,25 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
                 onSelected: (value) {
                   selectedSupplier = value.value;
                 },
-                items: suppliers.map((e) => AutoSuggestBoxItem<Supplier>(
-                  value: e,
-                  label: "${e.email} : ${e.name}",
-                )).toList(),
+                items: suppliers
+                    .map((e) => AutoSuggestBoxItem<Supplier>(
+                          value: e,
+                          label: "${e.email} : ${e.name}",
+                        ))
+                    .toList(),
               ),
             ),
           ),
-
           InfoLabel(
             label: "Quantity",
             child: NumberBox<double>(
               value: _quantityController,
               placeholder: "Quantity",
               onChanged: (double? value) {
-                if(value != null){
+                if (value != null) {
                   _quantityController = value;
-
-                }else{
+                } else {
                   _quantityController = 0;
-
                 }
                 calculateGRN();
                 setState(() {});
@@ -312,12 +327,10 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
               value: _wholesaleController,
               placeholder: "WholeSale Price ",
               onChanged: (double? value) {
-                if(value != null){
+                if (value != null) {
                   _wholesaleController = value;
-
-                }else{
+                } else {
                   _wholesaleController = 0;
-
                 }
                 calculateGRN();
                 setState(() {});
@@ -330,16 +343,13 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
               value: _retailController,
               placeholder: "Retail Price ",
               onChanged: (double? value) {
-                if(value != null){
+                if (value != null) {
                   _retailController = value;
-
-                }else{
+                } else {
                   _retailController = 0;
-
                 }
                 calculateGRN();
                 setState(() {});
-
               },
             ),
           ),
@@ -349,12 +359,10 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
               value: _defaultDiscount,
               placeholder: "Discount (LKR) ",
               onChanged: (double? value) {
-                if(value != null){
+                if (value != null) {
                   _defaultDiscount = value;
-
-                }else{
+                } else {
                   _defaultDiscount = 0;
-
                 }
                 setState(() {});
               },
@@ -363,10 +371,9 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
           InfoLabel(
             label: "GRN Value",
             child: TextBox(
-               controller: _valueController,
+              controller: _valueController,
               placeholder: "GRN Value",
               enabled: false,
-
             ),
           ),
           InfoLabel(
@@ -375,12 +382,10 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
               value: _paidController,
               placeholder: "Paid Amount",
               onChanged: (double? value) {
-                if(value != null){
+                if (value != null) {
                   _paidController = value;
-
-                }else{
+                } else {
                   _paidController = 0;
-
                 }
                 calculateGRN();
                 setState(() {});
@@ -393,20 +398,16 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
               controller: _douedController,
               placeholder: "Due Amount",
               enabled: false,
-
             ),
           ),
-
           InfoLabel(
             label: "Manufacture Date",
             child: DatePicker(
               selected: mnfDate,
               onChanged: (value) {
                 mnfDate = value;
-                if(mounted){
-                  setState(() {
-
-                  });
+                if (mounted) {
+                  setState(() {});
                 }
               },
             ),
@@ -417,9 +418,7 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
               selected: expDate,
               onChanged: (value) {
                 expDate = value;
-                setState(() {
-
-                });
+                setState(() {});
               },
             ),
           ),
@@ -433,9 +432,9 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
           FilledButton(
             child: Text(widget.grn == null ? "Add GRN" : "Update GRN"),
             onPressed: () {
-              if(widget.grn == null){
+              if (widget.grn == null) {
                 addGRN();
-              }else{
+              } else {
                 updateGRN();
               }
             },
