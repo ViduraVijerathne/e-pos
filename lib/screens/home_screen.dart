@@ -143,11 +143,11 @@ class _HomeScreenState extends State<HomeScreen> {
         footerItems: [
 
           PaneItemSeparator(),
-          customPaneItem(
-              icon: WindowsIcons.FluentIcons.settings_24_filled ,
-              title: "Settings",
-              body: SettingsScreen()
-          ),
+          // customPaneItem(
+          //     icon: WindowsIcons.FluentIcons.settings_24_filled ,
+          //     title: "Settings",
+          //     body: SettingsScreen()
+          // ),
           PaneItemAction(
             icon: Icon(WindowsIcons.FluentIcons.sign_out_24_filled, size: 24,),
             title: Text("Logout"),
