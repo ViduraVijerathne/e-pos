@@ -153,7 +153,7 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
   Future<void> addStock(GRN grn)async{
     Stock stock = Stock(
         id: 0,
-        barcode: BarcodeGenerator.generateRandomStockBarcode(),
+        barcode: await BarcodeGenerator.generateRandomStockBarcode(),
         availbleQty: grn.quantity,
         retailPrice: grn.retailPrice,
         wholesalePrice:grn.wholesalePrice,

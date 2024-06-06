@@ -278,4 +278,14 @@ class Stock{
     return stock;
   }
 
+  static Future<bool>  barcodeExists(String barcode)async{
+    var pool = MySQLDatabase().pool;
+    var results = await pool.execute("SELECT * FROM stock WHERE stock.barcode = '$barcode' ");
+    if(results.rows.isEmpty){
+      return false;
+    }
+
+    return true;
+  }
+
 }

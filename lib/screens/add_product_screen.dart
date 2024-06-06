@@ -75,7 +75,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       ),
     );
     if (result != null && result == 1) {
-      _barcodeController.text = BarcodeGenerator.generateRandomProductBarcode();
+      _barcodeController.text = await BarcodeGenerator.generateRandomProductBarcode();
     }
     setState(() {});
 
@@ -519,6 +519,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               label: "Barcode",
               labelStyle: FluentTheme.of(context).typography.bodyStrong,
               child: TextBox(
+
                 controller: _barcodeController,
                 placeholder: "Barcode",
               ),
