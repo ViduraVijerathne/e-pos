@@ -41,19 +41,10 @@ class Stock{
   static const String GETSTOCKBYID = "SELECT * FROM `stock` WHERE  id = :ID";
 
   Future<void> insert() async{
-    final conn = await MySQLConnection.createConnection(
-      host: AppData.dbURL,
-      port: AppData.dbPORT,
-      userName: AppData.dbUser,
-      password: AppData.dbPassword,
-      databaseName: AppData.dbName, // optional
-    );
-
-    await conn.connect();
+    final conn = MySQLDatabase().pool;
     var stmt = await conn.prepare(INSERTQUERY);
     IResultSet result = await stmt.execute([barcode,availbleQty,retailPrice,wholesalePrice,mnf_date,exp_date,product.id,grn.id,defaultDiscount]);
     print("STOCK ID : ${result.lastInsertID} : ${result.lastInsertID.toInt()}");
-    await conn.close();
   }
   static Future<List<Stock>> getAll()async{
     List<Stock> stocks = [];
