@@ -102,7 +102,7 @@ class Stock{
   static Future<List<Stock>> getForSell({int limit = 6})async{
     List<Stock> stocks = [];
     final conn = MySQLDatabase().pool;
-    var results = await conn.execute("$SELECTQUERY WHERE stock.exp_date >= CURDATE() AND  stock.availble_qty > 0 LIMIT $limit");
+    var results = await conn.execute("$SELECTQUERY WHERE stock.exp_date >= CURDATE() AND  stock.availble_qty > 0 AND stock.isActive = 1 LIMIT $limit");
 
     for (var row in results.rows) {
       GRN grn =await GRN.getByID(row.colByName(COLNAME_GRN)??"0");
