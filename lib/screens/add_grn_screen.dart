@@ -158,11 +158,12 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
         retailPrice: grn.retailPrice,
         wholesalePrice:grn.wholesalePrice,
         mnf_date: grn.mnfDate,
-        exp_date: grn.mnfDate,
+        exp_date: grn.expDate,
         product: grn.product,
         grn: grn,
       defaultDiscount: _defaultDiscount
     );
+
     await stock.insert();
 
   }
