@@ -67,6 +67,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  msix: ^3.16.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -130,3 +131,12 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+msix_config:
+  display_name: e-pos
+  publisher_display_name: AndromedaSoftwareSolutions
+  identity_name: com.andromedasoftware.epos
+  msix_version: 1.0.0.0
+  logo_path: assets/logo.ico
+#  publisher: CN=ViduraVijerathne, O=AndromedaSoftwareSolutions
+#  sign_msix: false
+  capabilities: internetClient, localSystem

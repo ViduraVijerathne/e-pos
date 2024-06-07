@@ -16,7 +16,7 @@ import 'package:point_of_sale/utils/app_colors.dart';
 import 'package:point_of_sale/utils/app_data.dart';
 import 'package:point_of_sale/utils/pc_info.dart';
 import 'package:provider/provider.dart';
-
+import 'package:msix/msix.dart';
 void main(){
   // runApp(const MyApp());
   Firestore.initialize(AppData.firebaseProjectId);
