@@ -120,10 +120,6 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
       showError("Password is required");
       return;
     }
-    if(accesses.isEmpty){
-      showError("Please Add minimum one role for the user");
-      return;
-    }
     Users user = Users(
         email: _emailController.text,
         username: _usernameController.text,
@@ -132,6 +128,7 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
     );
     await user.update();
     clearfields();
+    showSuccess("Successfully Updated!");
     load();
   }
   void clearfields(){
@@ -236,6 +233,10 @@ class _UserManagementScreenState extends State<UserManagementScreen> {
                               if(value ?? false){
                                 accesses.add(e);
                               }else{
+                                if(accesses.length ==1){
+                                  accesses = [];
+                                  return;
+                                }
                                 accesses.remove(e);
                               }
                               setState(() {});
