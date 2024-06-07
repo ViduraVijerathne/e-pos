@@ -2,10 +2,12 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/customer.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
+import '../models/users.dart';
+
 class AddCustomerScreen extends StatefulWidget {
   final Customer? customer;
   const AddCustomerScreen({super.key, this.customer});
-
+  static UserAccess access = UserAccess.ADDCUSTOMERS;
   @override
   State<AddCustomerScreen> createState() => _AddCustomerScreenState();
 }

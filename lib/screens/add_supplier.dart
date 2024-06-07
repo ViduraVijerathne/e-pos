@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/supplier.dart';
 import 'package:point_of_sale/models/supplierBankAccountDetails.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 class AddSupplierScreen extends StatefulWidget {
    final Supplier? supplier;
    const AddSupplierScreen({super.key, this.supplier});
-
+   static UserAccess access = UserAccess.ADDSUPPLIER;
   @override
   State<AddSupplierScreen> createState() => _AddSupplierScreenState();
 }

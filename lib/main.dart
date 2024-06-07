@@ -5,6 +5,7 @@ import 'package:firedart/firestore/firestore.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/dev/dev_home_screen.dart';
 import 'package:point_of_sale/dev/dev_login_screen.dart';
+import 'package:point_of_sale/providers/login_provider.dart';
 import 'package:point_of_sale/providers/theme_provider.dart';
 import 'package:point_of_sale/screens/activation_screen.dart';
 import 'package:point_of_sale/screens/admin_activator.dart';
@@ -21,7 +22,8 @@ void main(){
   Firestore.initialize(AppData.firebaseProjectId);
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => ThemeProvider(),)
+      ChangeNotifierProvider(create: (context) => ThemeProvider(),),
+      ChangeNotifierProvider(create: (context) => LoginProvider(),),
     ],
     // child: AdminActivatorScreen(),
     child: MyApp(),

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/supplier_search_controller.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:point_of_sale/widget/loading_widget.dart';
 import 'package:point_of_sale/widget/supplierCard.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
@@ -9,6 +10,7 @@ import 'package:responsive_grid_list/responsive_grid_list.dart';
 import '../models/supplier.dart';
 import '../models/supplierBankAccountDetails.dart';
 class SuppliersScreen extends StatefulWidget {
+  static UserAccess access = UserAccess.VIEWSUPPLIERS;
   const SuppliersScreen({super.key});
 
   @override

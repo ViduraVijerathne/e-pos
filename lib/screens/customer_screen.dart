@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/customer_search_controller.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/customer.dart';
@@ -7,6 +8,7 @@ import '../widget/customer_card.dart';
 import '../widget/loading_widget.dart';
 
 class CustomerScreen extends StatefulWidget {
+  static UserAccess access = UserAccess.VIEWCUSTOMERS;
   const CustomerScreen({super.key});
 
   @override

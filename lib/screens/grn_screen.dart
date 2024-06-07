@@ -4,6 +4,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/grn_search_controller.dart';
 import 'package:point_of_sale/constrollers/search_grn_controller.dart';
 import 'package:point_of_sale/models/supplier.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:point_of_sale/widget/grn_card.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
@@ -14,6 +15,7 @@ import '../widget/grn_date_filter_widget.dart';
 
 class GRNScreen extends StatefulWidget {
   final List<GRN>? viewingGRNs;
+  static UserAccess access = UserAccess.VIEWGRN;
   const GRNScreen({super.key,this.viewingGRNs});
 
   @override

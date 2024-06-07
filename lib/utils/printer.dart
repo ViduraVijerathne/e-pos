@@ -72,7 +72,7 @@ class Printer {
             pw.Text("Date: ${convertDateTime(invoice.invoiceDate)}", style: invoiceDataStyle),
             pw.Text("Customer: ${invoice.customer.name}",
                 style: invoiceDataStyle),
-            pw.Text("Cashier :${AppData.userName}", style: invoiceDataStyle),
+            pw.Text("Cashier :", style: invoiceDataStyle),
             pw.SizedBox(height: 2),
             pw.Container(
               padding: EdgeInsets.all(2),
