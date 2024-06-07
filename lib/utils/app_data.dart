@@ -24,9 +24,9 @@ class AppData{
   static String shopContact2 = "+94123456789";
   static String shopEmail = "abc@gmail.com";
 
-  static String userName = "John Doe";
-  static String userEmail = "abc@gmail.com";
-  static String userPassword = "password";
+  // static String userName = "John Doe";
+  // static String userEmail = "abc@gmail.com";
+  // static String userPassword = "password";
 
   static Future<void> loadSetupData() async{
    final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -42,9 +42,9 @@ class AppData{
    AppData.shopContact2 = prefs.getString("shopContact2") ?? "+94123456789";
    AppData.shopEmail = prefs.getString("shopEmail") ?? "abc@gmail.com";
 
-   AppData.userName = prefs.getString("userName") ?? "John Doe";
-   AppData.userEmail = prefs.getString("userEmail") ?? "abc@gmail.com";
-   AppData.userPassword = prefs.getString("userPassword") ?? "password";
+   // AppData.userName = prefs.getString("userName") ?? "John Doe";
+   // AppData.userEmail = prefs.getString("userEmail") ?? "abc@gmail.com";
+   // AppData.userPassword = prefs.getString("userPassword") ?? "password";
 
    print('dbURL: ${AppData.dbURL}');
    print('dbPORT: ${AppData.dbPORT}');
@@ -58,9 +58,9 @@ class AppData{
    print('shopContact2: ${AppData.shopContact2}');
    print('shopEmail: ${AppData.shopEmail}');
 
-   print('userName: ${AppData.userName}');
-   print('userEmail: ${AppData.userEmail}');
-   print('userPassword: ${AppData.userPassword}');
+   // print('userName: ${AppData.userName}');
+   // print('userEmail: ${AppData.userEmail}');
+   // print('userPassword: ${AppData.userPassword}');
 
 
 

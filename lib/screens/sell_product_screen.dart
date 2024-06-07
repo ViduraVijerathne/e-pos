@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:point_of_sale/models/customer.dart';
 import 'package:point_of_sale/models/invoice_item.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:point_of_sale/utils/barcodeGenerator.dart';
 import 'package:point_of_sale/utils/printer.dart';
 import 'package:point_of_sale/widget/stock_card.dart';
@@ -14,6 +15,7 @@ import '../utils/decimal_input_formatter.dart';
 import '../widget/select_customer_widget.dart';
 
 class SellProductScreen extends StatefulWidget {
+  static UserAccess access = UserAccess.SELLPRODUCT;
   const SellProductScreen({super.key});
 
   @override

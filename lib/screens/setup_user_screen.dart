@@ -1,6 +1,8 @@
+import 'package:firedart/auth/user_gateway.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:lottie/lottie.dart';
 import 'package:point_of_sale/main.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_data.dart';
@@ -23,12 +25,33 @@ class _SetupUserDetailsScreenState extends State<SetupUserDetailsScreen> {
     setState(() {
       isLoading = true;
     });
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("userEmail", _userEmailController.text);
-    prefs.setString("userName", _userNameController.text);
-    prefs.setString("userPassword", _userPasswordController.text);
-    prefs.setBool("isSetupped", true);
-    Navigator.of(context).push(FluentPageRoute(builder: (context) => MainWrapper(),));
+    List<UserAccess> access =UserAccess.values;
+   Users u = Users(id: 0, username: _userNameController.text, email: _userEmailController.text, password: _userPasswordController.text, accesses: access);
+   try{
+     await u.add();
+     final SharedPreferences prefs = await SharedPreferences.getInstance();
+     // prefs.setString("userEmail", _userEmailController.text);
+     // prefs.setString("userName", _userNameController.text);
+     // prefs.setString("userPassword", _userPasswordController.text);
+     prefs.setBool("isSetupped", true);
+     Navigator.of(context).push(FluentPageRoute(builder: (context) => MainWrapper(),));
+   }catch(ex){
+     await u.update();
+     await displayInfoBar(context, builder: (context, close) {
+       return InfoBar(
+         title: const Text('User already exist! Updated user'),
+         content: const Text('User already exist!'),
+         action: IconButton(
+           icon: const Icon(FluentIcons.clear),
+           onPressed: close,
+         ),
+         severity: InfoBarSeverity.warning,
+       );
+     });
+   }
+
+
+
     setState(() {
       isLoading = false;
     });

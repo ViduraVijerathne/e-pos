@@ -1,5 +1,6 @@
 import "package:fluent_ui/fluent_ui.dart";
 import "package:point_of_sale/constrollers/stock_search_controller.dart";
+import "package:point_of_sale/models/users.dart";
 import "package:point_of_sale/widget/stock_card.dart";
 import "package:responsive_grid_list/responsive_grid_list.dart";
 
@@ -9,7 +10,7 @@ import "../utils/other_utils.dart";
 
 class StockScreen extends StatefulWidget {
   const StockScreen({super.key});
-
+  static UserAccess access = UserAccess.VIEWGRN;
   @override
   State<StockScreen> createState() => _StockScreenState();
 }

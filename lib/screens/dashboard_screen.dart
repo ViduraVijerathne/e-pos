@@ -3,10 +3,12 @@ import 'package:point_of_sale/widget/insight_summery_widget.dart';
 import 'package:point_of_sale/widget/low_stock_products_view_widget.dart';
 import 'package:point_of_sale/widget/my_line_chart_widget.dart';
 
+import '../models/users.dart';
 import '../widget/expired_stock_view_widget.dart';
 import '../widget/payment_due_grn_view_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
+  static UserAccess access = UserAccess.DASHBOARD;
   const DashboardScreen({super.key});
 
   @override

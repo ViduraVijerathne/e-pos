@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/invoice_search_controller.dart';
 import 'package:point_of_sale/models/customer.dart';
 import 'package:point_of_sale/models/invoice.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:point_of_sale/utils/other_utils.dart';
 import 'package:point_of_sale/view_models/invoice_view.dart';
 import 'package:point_of_sale/widget/invoiceViewCard.dart';
@@ -12,6 +13,7 @@ import '../models/product.dart';
 import '../models/stock.dart';
 class InvoiceScreen extends StatefulWidget {
   final Customer? customer;
+  static UserAccess access = UserAccess.VIEWINVOICE;
   const InvoiceScreen({super.key, this.customer});
 
   @override

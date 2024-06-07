@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/main_category.dart';
 import 'package:point_of_sale/models/product.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:point_of_sale/utils/method_response.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
@@ -11,7 +12,7 @@ import '../utils/barcodeGenerator.dart';
 class AddProductScreen extends StatefulWidget {
   final bool isEditingMode;
   final Product? product;
-
+  static UserAccess access = UserAccess.ADDPRODUCT;
   const AddProductScreen({super.key, this.isEditingMode = false, this.product});
 
   @override

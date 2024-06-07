@@ -1,8 +1,11 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:lottie/lottie.dart';
+import 'package:point_of_sale/models/users.dart';
+import 'package:point_of_sale/providers/login_provider.dart';
 import 'package:point_of_sale/screens/home_screen.dart';
 import 'package:point_of_sale/screens/setup_screen.dart';
 import 'package:point_of_sale/utils/activator.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/app_data.dart';
 import '../widget/theme_btn.dart';
@@ -101,8 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
       isLoading = true;
     });
 
-    if (AppData.userEmail == _userEmailController.text &&
-        AppData.userPassword == _userPasswordController.text) {
+    Users? user =await Users.login(_userEmailController.text,_userPasswordController.text);
+
+    // if (AppData.userEmail == _userEmailController.text &&
+    //     AppData.userPassword == _userPasswordController.text) {
+    if(user != null){
       await displayInfoBar(context, builder: (context, close) {
         return InfoBar(
           title: const Text('Success!'),
@@ -115,11 +121,16 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       });
 
+      Provider.of<LoginProvider>(context,listen: false).setUser(user);
+
       await Future.delayed(Duration(seconds: 3));
       Navigator.of(context).pushReplacement(FluentPageRoute(
         builder: (context) => HomeScreen(),
       ));
     } else {
+
+      // check other user
+
       await displayInfoBar(context, builder: (context, close) {
         return InfoBar(
           title: const Text('OOPS..!'),

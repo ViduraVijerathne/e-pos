@@ -1,5 +1,6 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/constrollers/product_search_controller.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:point_of_sale/screens/stock_screen.dart';
 import 'package:point_of_sale/widget/product_card.dart';
 import 'package:point_of_sale/widget/view_product_sales_widget.dart';
@@ -13,6 +14,7 @@ import '../widget/ProductStockViewWidget.dart';
 import 'add_product_screen.dart';
 
 class ProductScreen extends StatefulWidget {
+  static UserAccess access = UserAccess.VIEWPRODUCTS;
   const ProductScreen({super.key});
 
   @override

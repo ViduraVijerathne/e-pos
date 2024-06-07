@@ -1,6 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/stock.dart';
 import 'package:point_of_sale/models/supplier.dart';
+import 'package:point_of_sale/models/users.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 
 import '../models/grn.dart';
@@ -9,7 +10,7 @@ import '../utils/barcodeGenerator.dart';
 
 class AddGRNScreen extends StatefulWidget {
   final GRN? grn;
-
+  static UserAccess access = UserAccess.ADDGRN;
   const AddGRNScreen({super.key, this.grn});
 
   @override
