@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:barcode/barcode.dart';
 import 'package:point_of_sale/models/product.dart';
 import 'package:point_of_sale/models/stock.dart';
 
@@ -69,5 +70,22 @@ class BarcodeGenerator{
     }
     return result;
   }
+
+  static String generateBarcodeImage(String code){
+    // Create a Barcode instance
+    final barcode = Barcode.code128();
+
+    // Generate the barcode
+    final svg = barcode.toSvg(
+      code,
+      width: 200,
+      height: 80,
+      drawText: true,
+    );
+    print(svg);
+    return svg;
+  }
+
+
 
 }

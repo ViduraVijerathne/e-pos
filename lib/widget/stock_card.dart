@@ -2,6 +2,7 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:point_of_sale/models/product.dart';
 import 'package:point_of_sale/models/supplier.dart';
 import 'package:point_of_sale/widget/grn_card.dart';
+import 'package:point_of_sale/widget/print_stock_barcode.dart';
 import 'package:point_of_sale/widget/product_card.dart';
 import 'package:point_of_sale/widget/supplierCard.dart';
 import 'package:point_of_sale/widget/update_default_discount_stock.dart';
@@ -614,6 +615,26 @@ class _StockCardWidgetState extends State<StockCardWidget> {
                   child: Button(
                     child: Text("Update Default Discount"),
                     onPressed: updateDefaultDiscount,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  width: rightFlex,
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: borderColor,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Button(
+                    child: Text("Print Barcode"),
+                    onPressed: () {
+                      Navigator.of(context).push(FluentDialogRoute(builder: (context) => Center(child: SizedBox(width:500,child: PrintStockBarcode(stock: widget.stock,))), context: context));
+                    },
                   ),
                 ),
               ),
