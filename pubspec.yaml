@@ -135,7 +135,7 @@ msix_config:
   display_name: e-pos
   publisher_display_name: AndromedaSoftwareSolutions
   identity_name: com.andromedasoftware.epos
-  msix_version: 1.0.0.0
+  msix_version: 1.0.0.1
   logo_path: assets/logo.ico
 #  publisher: CN=ViduraVijerathne, O=AndromedaSoftwareSolutions
 #  sign_msix: false

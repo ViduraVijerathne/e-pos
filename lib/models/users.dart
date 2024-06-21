@@ -1,3 +1,5 @@
+import 'package:mysql_client/mysql_client.dart';
+import 'package:point_of_sale/utils/app_data.dart';
 import 'package:point_of_sale/utils/database.dart';
 
 class Users{
@@ -37,6 +39,15 @@ class Users{
   Future<void> add()async{
     if(!await isExist(this)){
       var con = MySQLDatabase().pool;
+      // final con = await MySQLConnection.createConnection(
+      //   host: AppData.dbURL,
+      //   port: AppData.dbPORT,
+      //   userName: AppData.dbUser,
+      //   password: AppData.dbPassword,
+      //   databaseName: AppData.dbName, // op
+      //   // secure: false,
+      // );
+      // con.connect();
       String q = "SELECT * FROM users WHERE users.email = '${email}' OR users.userName = '${username}'";
 
       var result= await con.execute(q);
@@ -47,7 +58,18 @@ class Users{
       print("EXIST");
       throw Exception("User already exists");
     }
+    // final con = await MySQLConnection.createConnection(
+    //   host: AppData.dbURL,
+    //   port: AppData.dbPORT,
+    //   userName: AppData.dbUser,
+    //   password: AppData.dbPassword,
+    //   databaseName: AppData.dbName, // op
+    //   // secure: false,
+    // );
+    // con.connect();
     var con = MySQLDatabase().pool;
+    print(AppData.dbUser);
+    print(AppData.dbPassword);
     String q = "INSERT INTO users (userName, email, password, users.auths) VALUES ('${username}', '${email}', '${password}', '${_accessesToJson(accesses)}')";
     await con.execute(q);
   }
