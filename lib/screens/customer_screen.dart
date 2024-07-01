@@ -104,15 +104,15 @@ class _CustomerScreenState extends State<CustomerScreen> {
               rowMainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InfoLabel(
-                  label: "Supplier Name",
+                  label: "Customer Name",
                   child: TextBox(
                     controller: _nameController,
-                    placeholder: "Supplier Name",
+                    placeholder: "Customer Name",
                     // controller: _barcodeController,
                   ),
                 ),
                 InfoLabel(
-                  label: "Supplier Contact",
+                  label: "Customer Contact",
                   child: TextBox(
                     controller: _contactController,
                     placeholder: "Contact",
