@@ -252,9 +252,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       return false;
     }
     if (_productSinhalaNameController.text.isEmpty) {
-      showMessageBox("Error !", "Please Enter Product Sinhala Name",
-          InfoBarSeverity.error);
-      return false;
+      _productNameController.text = _productNameController.text;
     }
     if (selectedMainCategory == null) {
       if (selectedMainCategoryStr.isEmpty) {
