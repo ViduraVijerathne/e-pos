@@ -159,6 +159,8 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
     _supplierController.clear();
     _valueController.clear();
     _douedController.clear();
+    _defaultDiscount = 0;
+    
     _descriptionController.clear();
     _quantityController = 0;
     _wholesaleController = 0;
@@ -279,6 +281,23 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
                 onSelected: (value) {
                   selectedProduct = value.value;
                 },
+                onChanged: (text, reason) {
+                  if(reason == TextChangedReason.cleared){
+                    selectedProduct = null;
+                  }
+                  if(reason == TextChangedReason.userInput){
+                    for(Product p in products){
+                       if(p.barcode == text){
+                         selectedProduct = p;
+                         setState(() {
+
+                         });
+                       }
+                    }
+                  }
+                  print(reason);
+                },
+                clearButtonEnabled: true,
                 items: products
                     .map((e) => AutoSuggestBoxItem<Product>(
                           value: e,
@@ -297,10 +316,16 @@ class _AddGRNScreenState extends State<AddGRNScreen> {
                 onSelected: (value) {
                   selectedSupplier = value.value;
                 },
+                onChanged: (text, reason) {
+                  if(reason == TextChangedReason.cleared){
+                    selectedProduct = null;
+                  }
+                  print(reason);
+                },
                 items: suppliers
                     .map((e) => AutoSuggestBoxItem<Supplier>(
                           value: e,
-                          label: "${e.email} : ${e.name}",
+                          label: "${e.contact} : ${e.name}",
                         ))
                     .toList(),
               ),
