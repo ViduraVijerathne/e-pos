@@ -30,32 +30,37 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
       return false;
     }
     if(_addressController.text.isEmpty){
-      showMessageBox("Error!", "Please Enter Supplier Address", InfoBarSeverity.error);
-      return false;
+      // showMessageBox("Error!", "Please Enter Supplier Address", InfoBarSeverity.error);
+      _addressController.text = "N/A";
     }
     if(_phoneController.text.isEmpty){
       showMessageBox("Error!", "Please Enter Supplier Phone", InfoBarSeverity.error);
       return false;
     }
     if(_emailController.text.isEmpty){
-      showMessageBox("Error!", "Please Enter Supplier Email", InfoBarSeverity.error);
-      return false;
+      // showMessageBox("Error!", "Please Enter Supplier Email", InfoBarSeverity.error);
+      // return false;
+      _emailController.text =  "N/A";
     }
     if(_bankNameController.text.isEmpty){
-      showMessageBox("Error!", "Please Enter Bank Name", InfoBarSeverity.error);
-      return false;
+      // showMessageBox("Error!", "Please Enter Bank Name", InfoBarSeverity.error);
+      // return false;
+      _bankNameController.text = "N/A";
     }
     if(_accountNumberController.text.isEmpty){
-      showMessageBox("Error!", "Please Enter Bank Account Number", InfoBarSeverity.error);
-      return false;
+      // showMessageBox("Error!", "Please Enter Bank Account Number", InfoBarSeverity.error);
+      // return false;
+      _accountNumberController.text = "N/A";
     }
     if(_bankAccountBranchController.text.isEmpty){
-      showMessageBox("Error!", "Please Enter Bank Account Branch", InfoBarSeverity.error);
-      return false;
+      // showMessageBox("Error!", "Please Enter Bank Account Branch", InfoBarSeverity.error);
+      // return false;
+      _bankAccountBranchController.text = "N/A";
     }
     if(_bankAccountHolderNameController.text.isEmpty){
-      showMessageBox("Error!", "Please Enter Bank Account Holder Name", InfoBarSeverity.error);
-      return false;
+      // showMessageBox("Error!", "Please Enter Bank Account Holder Name", InfoBarSeverity.error);
+      // return false;
+      _bankAccountHolderNameController.text = "N/A";
     }
     return true;
   }
